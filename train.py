@@ -1,3 +1,5 @@
+import utils
+
 
 # -2. configの設定
 # -1. cudaの設定
@@ -11,3 +13,13 @@
 # 6. opt
 # 7. eval
 # save
+
+def main():
+    # Configの読み込み (utils)
+    ini, debug_mode = utils.config.read_config()
+    print("Debug mode:", debug_mode)
+    
+
+
+if __name__=='__main__':
+    main()
