@@ -8,6 +8,8 @@ from torchvision import datasets, models, transforms
 import inference
 import os
 
+# 0.1 Datalabelの生成
+# 0.2 データの分割
 # 0.5. dataloader
 # 1. Lossの設定
 # 2. preprocess
