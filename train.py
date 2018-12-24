@@ -39,7 +39,27 @@ def main():
         ini, labels, debug_mode)
     # データオーグメンターション
     trans = dataloader.get_transform(ini)
-    
+    # データセット
+    dataset_class = dataloader.ChestXRayDataset
+    train_dataset = dataset_class(
+        img_path=train_list,
+        labels=labels,
+        ini=ini,
+        transform=transforms.Compose(trans['train'])
+        )
+    valid_dataset = dataset_class(
+        img_path=val_list,
+        labels=labels,
+        ini=ini,
+        transform=transforms.Compose(trans['val'])
+        )
+    test_dataset = dataset_class(
+        img_path=test_list,
+        labels=labels,
+        ini=ini,
+        transform=transforms.Compose(trans['val'])
+        )
+
 
 
 
