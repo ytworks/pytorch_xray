@@ -6,6 +6,7 @@ import numpy as np
 import torchvision
 from torchvision import datasets, models, transforms
 import inference
+import dataloader
 import os
 
 # 0.2 データの分割
@@ -36,6 +37,9 @@ def main():
     # trainとvalidationとテストの分割
     train_list, val_list, test_list = utils.data_split.data_split(
         ini, labels, debug_mode)
+    # データオーグメンターション
+    trans = dataloader.get_transform(ini)
+    
 
 
 
