@@ -8,7 +8,6 @@ from torchvision import datasets, models, transforms
 import inference
 import os
 
-# 0.1 Datalabelの生成
 # 0.2 データの分割
 # 0.5. dataloader
 # 1. Lossの設定
@@ -34,6 +33,9 @@ def main():
         model.to('cuda')
     # 教師データの読み込み
     labels, label_list = utils.label_maker.get_label(ini)
+    # trainとvalidationとテストの分割
+    train_list, val_list, test_list = utils.data_split.data_split(
+        ini, labels, debug_mode)
 
 
 
