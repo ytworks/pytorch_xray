@@ -31,7 +31,7 @@ def main():
     if num_gpu > 1:
         model = nn.DataParallel(model)
     if num_gpu > 0:
-        model.cuda()
+        model.to('cuda')
 
 
 
