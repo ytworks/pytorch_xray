@@ -32,6 +32,8 @@ def main():
         model = nn.DataParallel(model)
     if num_gpu > 0:
         model.to('cuda')
+    # 教師データの読み込み
+    labels, label_list = utils.label_maker.get_label(ini)
 
 
 
