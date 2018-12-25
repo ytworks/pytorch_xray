@@ -141,17 +141,18 @@ def main():
 
                 optimizer.zero_grad()
 
-                preds = model(inputs)
-                preds = preds[-1]
+                with torch.set_grad_enabled(phase == 'train'):
+                    preds = model(inputs)
+                    preds = preds[-1]
 
-                loss = criterion(preds, labels)
+                    loss = criterion(preds, labels)
 
-                epoch_preds.append(preds.data.to('cpu').numpy())
-                epoch_labels.append(labels.data.to('cpu').numpy())
+                    epoch_preds.append(preds.data.to('cpu').numpy())
+                    epoch_labels.append(labels.data.to('cpu').numpy())
 
-                if phase == 'train':
-                    loss.backward()
-                    optimizer.step()
+                    if phase == 'train':
+                        loss.backward()
+                        optimizer.step()
 
                 epoch_loss.append(loss.item())
 
