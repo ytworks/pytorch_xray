@@ -21,6 +21,8 @@ def main():
     # Configの読み込み (utils)
     ini, debug_mode = utils.config.read_config()
     print("Debug mode:", debug_mode)
+    # device
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     # model
     ckpt_save_path = ini.get('model', 'ckpt_path')
     if ini.get('network', 'pool_type') != 'wildcat':
@@ -49,8 +51,8 @@ def main():
     num_gpu = ini.getint('env', 'num_gpu')
     if num_gpu > 1:
         model = nn.DataParallel(model)
+    model.to(device)
     if num_gpu > 0:
-        model.to('cuda')
         torch.backends.cudnn.benchmark = True
     # 教師データの読み込み
     label_dict, label_list = utils.label_maker.get_label(ini)
@@ -134,16 +136,8 @@ def main():
 
             disable_tqdm = not ini.getboolean('env', 'verbose')
             for inputs, labels in tqdm(dataloaders[phase], disable=disable_tqdm):
-                if num_gpu > 0:
-                    inputs = inputs.to('cuda')
-                    labels = labels.to('cuda')
-                if volatile:
-                    with torch.no_grad():
-                        inputs = Variable(inputs)
-                        labels = Variable(labels)
-                else:
-                    inputs = Variable(inputs)
-                    labels = Variable(labels)
+                inputs = Variable(inputs.to(device))
+                labels = Variable(labels.to(device))
 
                 optimizer.zero_grad()
 
