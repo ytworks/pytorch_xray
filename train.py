@@ -9,6 +9,7 @@ from torch.utils.data import DataLoader
 import inference
 import dataloader
 import os
+from utils.optimizer import get_optimizer
 
 # 0.2 データの分割
 # 0.5. dataloader
@@ -71,7 +72,13 @@ def main():
         'test': test_loader,
     }
     # Optimizer and Scheduler
-
+    optimizer, scheduler = get_optimizer(model.parameters(),
+                                         ini.get('optimizer', 'type'),
+                                         ini.getfloat('optimizer', 'lr'),
+                                         ini.getfloat('optimizer', 'momentum'),
+                                         ini.getfloat('optimizer', 'weight_decay'),
+                                         ini.getint('optimizer', 'lr_decay_steps'),
+                                         ini.getfloat('optimizer', 'lr_decay_rate'))
     # Loss func
     criterion = nn.BCELoss()
 
