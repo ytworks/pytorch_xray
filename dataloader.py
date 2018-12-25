@@ -42,6 +42,7 @@ class ChestXRayDataset(Dataset):
         self.label_dict = labels
         self.transform = transform
         self.grayscale = grayscale
+        self.ini = ini
 
     def __getitem__(self, idx):
         """
@@ -55,7 +56,7 @@ class ChestXRayDataset(Dataset):
                 X = img.convert('L')
             else:
                 X = img.convert('RGB')
-        Y = self.label_dict[image_path]['label']
+        Y = np.array(self.label_dict[image_path]['label'])
 
         if self.transform is not None:
             X = self.transform(X)

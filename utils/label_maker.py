@@ -1,5 +1,6 @@
 import pandas as pd
 from sklearn.preprocessing import MultiLabelBinarizer
+import numpy as np
 
 
 def get_label(ini):
@@ -13,7 +14,7 @@ def get_label(ini):
         labels.setdefault(row['filepath'], {})
         labels[row['filepath']].setdefault('findings', row['findings'])
         labels[row['filepath']].setdefault(
-            'label', mlb.transform([set(row['findings'].split('|'))])[0])
+            'label', np.array(mlb.transform([set(row['findings'].split('|'))])[0]).astype(np.float32))
         labels[row['filepath']].setdefault('patient_id', row['patient_id'])
         assert len(labels[row['filepath']]['label']) == 15, "Binarizer Error"
     return labels, list(mlb.classes_)
