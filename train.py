@@ -27,13 +27,27 @@ from utils.metrics import calc_auc
 # 7. eval
 # save
 
+
 def main():
     # Configの読み込み (utils)
     ini, debug_mode = utils.config.read_config()
     print("Debug mode:", debug_mode)
     # model
     ckpt_save_path = ini.get('model', 'ckpt_path')
-    model = inference.Model(model_name='densenet121', pretrained=True, pooling='max')
+    if ini.get('network', 'pool_type') != 'wildcat':
+        model = inference.Model_GlobalPool(model_name=ini.get('network', 'pretrained_model'),
+                                           pretrained=ini.getboolean(
+                                               'network', 'pretrained'),
+                                           pooling=ini.get(
+                                               'network', 'global_pool_type'),
+                                           num_classes=ini.getint('network', 'num_classes'))
+    else:
+        model = inference.Model_WildCat(model_name=ini.get('network', 'pretrained_model'),
+                                        pretrained=ini.getboolean(
+                                            'network', 'pretrained'),
+                                        pooling=ini.get(
+                                            'network', 'global_pool_type'),
+                                        num_classes=ini.getint('network', 'num_classes'))
     checkpoint = {'epoch': None,
                   'optimizer': None,
                   'scheduler': None,
@@ -61,23 +75,26 @@ def main():
         labels=label_dict,
         ini=ini,
         transform=trans['train']
-        )
+    )
     valid_dataset = dataset_class(
         img_path=val_list,
         labels=label_dict,
         ini=ini,
         transform=trans['val']
-        )
+    )
     test_dataset = dataset_class(
         img_path=test_list,
         labels=label_dict,
         ini=ini,
         transform=trans['val']
-        )
+    )
     batch_size = ini.getint('params', 'batch_size')
-    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=4)
-    valid_loader = DataLoader(valid_dataset, batch_size=batch_size, shuffle=False, num_workers=4)
-    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, num_workers=4)
+    train_loader = DataLoader(
+        train_dataset, batch_size=batch_size, shuffle=True, num_workers=4)
+    valid_loader = DataLoader(
+        valid_dataset, batch_size=batch_size, shuffle=False, num_workers=4)
+    test_loader = DataLoader(
+        test_dataset, batch_size=batch_size, shuffle=False, num_workers=4)
     dataloaders = {
         'train': train_loader,
         'valid': valid_loader,
@@ -88,8 +105,10 @@ def main():
                                          ini.get('optimizer', 'type'),
                                          ini.getfloat('optimizer', 'lr'),
                                          ini.getfloat('optimizer', 'momentum'),
-                                         ini.getfloat('optimizer', 'weight_decay'),
-                                         ini.getint('optimizer', 'lr_decay_steps'),
+                                         ini.getfloat(
+                                             'optimizer', 'weight_decay'),
+                                         ini.getint(
+                                             'optimizer', 'lr_decay_steps'),
                                          ini.getfloat('optimizer', 'lr_decay_rate'))
     # Loss func
     criterion = nn.BCELoss()
@@ -103,7 +122,7 @@ def main():
     # start training
     for epoch in range(init_epoch, num_epochs):
         start = time.time()
-        print('-'*50)
+        print('-' * 50)
         epoch_result = {
             'train': {},
             'valid': {},
@@ -170,7 +189,7 @@ def main():
                         'scheduler': scheduler,
                         'state_dict': best_weight,
                         'best_auc': best_valid_auc,
-                        }
+                    }
                     if isinstance(scheduler, ReduceLROnPlateau):
                         best_ckpt['scheduler'] = None  # cannot save as pkl
                     checkpoint.update(best_ckpt)
@@ -184,7 +203,8 @@ def main():
             epoch_loss = np.mean(epoch_loss)
             auc_msg = ''
             for idx, finding in enumerate(label_list):
-                auc_msg += finding + ':' + '{score:.3f}'.format(score=aucs[idx]) + ', '
+                auc_msg += finding + ':' + \
+                    '{score:.3f}'.format(score=aucs[idx]) + ', '
             print(auc_msg)
             epoch_result[phase]['loss'] = epoch_loss
             epoch_result[phase]['all_auc'] = aucs
@@ -199,7 +219,7 @@ def main():
                 train_c=epoch_result['train']['loss'],
                 valid_c=epoch_result['valid']['loss'],
                 test_c=epoch_result['test']['loss'])
-            )
+        )
         print('Train AUC: ' + epoch_result['train']['auc_msg'])
         print('Vaiid AUC: ' + epoch_result['valid']['auc_msg'])
         print('Test  AUC: ' + epoch_result['test']['auc_msg'])
@@ -211,14 +231,10 @@ def main():
             else:
                 scheduler.step()
 
-
         if worse_count >= patience:
             print('Early Stopping')
             return
 
 
-
-
-
-if __name__=='__main__':
+if __name__ == '__main__':
     main()

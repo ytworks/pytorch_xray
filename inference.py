@@ -16,7 +16,7 @@ def get_base_model(model_name, pretrained, pooling='max', num_classes=15):
     fc = nn.Linear(final_dense_dim, num_classes)
     return conv, pool, fc
 
-    
+
 def get_pooling_layer(kernel_size, pooling_method):
     if pooling_method == 'avg':
         pool = nn.AvgPool2d(kernel_size=kernel_size)
@@ -27,7 +27,21 @@ def get_pooling_layer(kernel_size, pooling_method):
     return pool
 
 
-class Model(nn.Module):
+class Model_GlobalPool(nn.Module):
+    def __init__(self, model_name, pretrained, pooling='max', num_classes=15):
+        super().__init__()
+        self.conv, self.pool, self.fc = get_base_model(model_name, pretrained, pooling, num_classes)
+
+    def forward(self, x):
+        conv = self.conv(x)
+        pool = self.pool(conv)
+        pool = pool.view(pool.size(0), -1)
+        out = self.fc(pool)
+        # out = nn.Sigmoid()(out)
+        out = F.sigmoid(out)
+        return conv, pool, out
+
+class Model_WildCat(nn.Module):
     def __init__(self, model_name, pretrained, pooling='max', num_classes=15):
         super().__init__()
         self.conv, self.pool, self.fc = get_base_model(model_name, pretrained, pooling, num_classes)
