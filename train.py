@@ -16,17 +16,6 @@ import time
 from tqdm import tqdm
 from utils.metrics import calc_auc
 
-# 0.2 データの分割
-# 0.5. dataloader
-# 1. Lossの設定
-# 2. preprocess
-# 3. Loss(pred, true)
-# 4. no grad
-# 5. backward
-# 6. opt
-# 7. eval
-# save
-
 
 def main():
     # Configの読み込み (utils)
@@ -45,8 +34,10 @@ def main():
         model = inference.Model_WildCat(model_name=ini.get('network', 'pretrained_model'),
                                         pretrained=ini.getboolean(
                                             'network', 'pretrained'),
-                                        pooling=ini.get(
-                                            'network', 'global_pool_type'),
+                                        kmax=ini.getfloat('network', 'wc_kmax'),
+                                        kmin=ini.getfloat('network', 'wc_kmin'),
+                                        alpha=ini.getfloat('network', 'wc_alpha'),
+                                        num_maps=ini.getint('network', 'num_maps'),
                                         num_classes=ini.getint('network', 'num_classes'))
     checkpoint = {'epoch': None,
                   'optimizer': None,
