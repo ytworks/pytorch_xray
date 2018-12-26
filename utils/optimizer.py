@@ -16,6 +16,8 @@ def get_optimizer(params, opt, lr=1e-2, momentum=0., weight_decay=0.,
     scheduler = None
     if opt == 'adam':
         optimizer = Adam(params, lr=lr, weight_decay=weight_decay)
+    elif opt == 'amsgrad':
+        optimizer = Adam(params, lr=lr, weight_decay=weight_decay, amsgrad=True)
     elif opt == 'sgd':  # scheduled SGD
         optimizer = SGD(params, lr=lr, momentum=momentum, weight_decay=weight_decay)
     else:
