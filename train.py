@@ -112,7 +112,12 @@ def main():
                                                  'scheduler_type'),
                                          ini.getint(
                                              'optimizer', 'lr_decay_steps'),
-                                         ini.getfloat('optimizer', 'lr_decay_rate'))
+                                         ini.getfloat('optimizer', 'lr_decay_rate'),
+                                         ini.getint('optimizer', 'patience'),
+                                         ini.getint('optimizer', 'te'),
+                                         ini.getint('optimizer', 'tmult'),
+                                         ini.getfloat('optimizer', 'min_lr')
+                                         )
     # Loss func
     criterion = utils.loss.get_loss(loss_type=ini.get('loss', 'loss_type'),
                                     alpha=ini.getfloat('loss', 'focal_alpha'),
