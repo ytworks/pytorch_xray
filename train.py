@@ -31,7 +31,8 @@ def main():
                                                'network', 'pretrained'),
                                            pooling=ini.get(
                                                'network', 'global_pool_type'),
-                                           num_classes=ini.getint('network', 'num_classes'),
+                                           num_classes=ini.getint(
+                                               'network', 'num_classes'),
                                            fine_tuning=ini.getboolean('network', 'fine_tuning'))
     else:
         model = inference.Model_WildCat(model_name=ini.get('network', 'pretrained_model'),
@@ -45,7 +46,8 @@ def main():
                                             'network', 'wc_alpha'),
                                         num_maps=ini.getint(
                                             'network', 'num_maps'),
-                                        num_classes=ini.getint('network', 'num_classes'),
+                                        num_classes=ini.getint(
+                                            'network', 'num_classes'),
                                         fine_tuning=ini.getboolean('network', 'fine_tuning'))
     checkpoint = {'epoch': None,
                   'optimizer': None,
@@ -112,7 +114,9 @@ def main():
                                              'optimizer', 'lr_decay_steps'),
                                          ini.getfloat('optimizer', 'lr_decay_rate'))
     # Loss func
-    criterion = nn.BCELoss()
+    criterion = utils.loss.get_loss(loss_type=ini.get('loss', 'loss_type'),
+                                    alpha=ini.getfloat('loss', 'focal_alpha'),
+                                    gamma=ini.getfloat('loss', 'focal_gamma'))
 
     # Training Loop
     best_valid_auc = 0.
@@ -161,8 +165,10 @@ def main():
                     if phase == 'train':
                         loss.backward()
                         utils.gradient_clip.clipping(model,
-                                                     ini.getboolean('gradient_clip', 'is_clip'),
-                                                     ini.getboolean('gradient_clip', 'is_norm'),
+                                                     ini.getboolean(
+                                                         'gradient_clip', 'is_clip'),
+                                                     ini.getboolean(
+                                                         'gradient_clip', 'is_norm'),
                                                      ini.getfloat('gradient_clip', 'value'))
                         optimizer.step()
 
