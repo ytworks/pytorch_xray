@@ -5,3 +5,4 @@ from . import optimizer
 from . import metrics
 from . import wildcat
 from . import gradient_clip
+from . import loss
