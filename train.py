@@ -31,7 +31,8 @@ def main():
                                                'network', 'pretrained'),
                                            pooling=ini.get(
                                                'network', 'global_pool_type'),
-                                           num_classes=ini.getint('network', 'num_classes'))
+                                           num_classes=ini.getint('network', 'num_classes'),
+                                           fine_tuning=ini.getboolean('network', 'fine_tuning'))
     else:
         model = inference.Model_WildCat(model_name=ini.get('network', 'pretrained_model'),
                                         pretrained=ini.getboolean(
@@ -44,7 +45,8 @@ def main():
                                             'network', 'wc_alpha'),
                                         num_maps=ini.getint(
                                             'network', 'num_maps'),
-                                        num_classes=ini.getint('network', 'num_classes'))
+                                        num_classes=ini.getint('network', 'num_classes'),
+                                        fine_tuning=ini.getboolean('network', 'fine_tuning'))
     checkpoint = {'epoch': None,
                   'optimizer': None,
                   'scheduler': None,

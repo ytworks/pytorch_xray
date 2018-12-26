@@ -8,49 +8,53 @@ from torchvision import models
 from utils.wildcat import *
 
 
-def get_base_model(model_name, pretrained, pooling='max', num_classes=15):
-    conv, pool_size, final_dense_dim = get_pretrained_model(model_name, pretrained)
+def get_base_model(model_name, pretrained, pooling='max', num_classes=15, fine_tuning=False):
+    conv, pool_size, final_dense_dim = get_pretrained_model(model_name, pretrained, fine_tuning)
     pool = get_pooling_layer(pool_size, pooling)
     fc = nn.Linear(final_dense_dim, num_classes)
     return conv, pool, fc
 
 
-def get_pretrained_model(model_name, pretrained):
+def get_pretrained_model(model_name, pretrained, fine_tuning):
     if model_name == 'densenet121':
         model = models.densenet121(pretrained=pretrained)
+        set_parameter_requires_grad(model, fine_tuning)
         net = nn.Sequential(*list(model.features))
         pool_size = 7
         final_dense_dim = 1024
     elif model_name == 'vgg':
         model = models.vgg19_bn(pretrained=pretrained)
+        set_parameter_requires_grad(model, fine_tuning)
         net = nn.Sequential(*list(model.features))
         pool_size = 7
         final_dense_dim = 512
     elif model_name == 'resnet34':
         model = models.resnet34(pretrained=pretrained)
+        set_parameter_requires_grad(model, fine_tuning)
         net = nn.Sequential(*list(model.children())[:-2])
         pool_size = 8
         final_dense_dim = 512
     elif model_name == 'resnet50':
         model = models.resnet50(pretrained=pretrained)
+        set_parameter_requires_grad(model, fine_tuning)
         net = nn.Sequential(*list(model.children())[:-2])
         pool_size = 7
         final_dense_dim = 2048
     elif model_name == 'resnet101':
         model = models.resnet101(pretrained=pretrained)
+        set_parameter_requires_grad(model, fine_tuning)
         net = nn.Sequential(*list(model.children())[:-2])
         pool_size = 7
         final_dense_dim = 2048
     elif model_name == 'resnet152':
         model = models.resnet152(pretrained=pretrained)
+        set_parameter_requires_grad(model, fine_tuning)
         net = nn.Sequential(*list(model.children())[:-2])
         pool_size = 7
         final_dense_dim = 2048
     else:
         raise NotImplementedError
     print(net)
-    # ここにfine tuningを入れる
-
     return net, pool_size, final_dense_dim
 
 
@@ -71,23 +75,24 @@ def get_pooling_layer(kernel_size, pooling_method):
 
 # paramsの設定で学習係数を層ごとに変えられるらしい
 class Model_GlobalPool(nn.Module):
-    def __init__(self, model_name, pretrained, pooling='max', num_classes=15):
+    def __init__(self, model_name, pretrained, pooling='max', num_classes=15,
+                 fine_tuning=False):
         super().__init__()
-        self.conv, self.pool, self.fc = get_base_model(model_name, pretrained, pooling, num_classes)
+        self.conv, self.pool, self.fc = get_base_model(model_name, pretrained, pooling, num_classes, fine_tuning)
 
     def forward(self, x):
         conv = self.conv(x)
         pool = self.pool(conv)
         pool = pool.view(pool.size(0), -1)
         out = self.fc(pool)
-        # out = nn.Sigmoid()(out)
         out = torch.sigmoid(out)
         return conv, pool, out
 
 class Model_WildCat(nn.Module):
-    def __init__(self, model_name, pretrained, kmax=1, kmin=None, alpha=1, num_maps=1, num_classes=15):
+    def __init__(self, model_name, pretrained, kmax=1, kmin=None, alpha=1, num_maps=1, num_classes=15,
+                 fine_tuning=False):
         super().__init__()
-        self.features, _, num_features = get_pretrained_model(model_name, pretrained)
+        self.features, _, num_features = get_pretrained_model(model_name, pretrained, fine_tuning)
         self.conv = nn.Conv2d(in_channels=num_features,
                               out_channels=num_classes*num_maps,
                               kernel_size=1,
