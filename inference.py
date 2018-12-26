@@ -9,19 +9,55 @@ from utils.wildcat import *
 
 
 def get_base_model(model_name, pretrained, pooling='max', num_classes=15):
-    net = get_pretrained_model(model_name, pretrained)
-    conv = nn.Sequential(*list(net.features))
-    pool_size = 7
-    final_dense_dim = 1024
+    conv, pool_size, final_dense_dim = get_pretrained_model(model_name, pretrained)
     pool = get_pooling_layer(pool_size, pooling)
     fc = nn.Linear(final_dense_dim, num_classes)
     return conv, pool, fc
 
 
 def get_pretrained_model(model_name, pretrained):
-    densenet = models.densenet121(pretrained=pretrained)
-    print(densenet.features)
-    return densenet
+    if model_name == 'densenet121':
+        model = models.densenet121(pretrained=pretrained)
+        net = nn.Sequential(*list(model.features))
+        pool_size = 7
+        final_dense_dim = 1024
+    elif model_name == 'vgg':
+        model = models.vgg19_bn(pretrained=pretrained)
+        net = nn.Sequential(*list(model.features))
+        pool_size = 7
+        final_dense_dim = 512
+    elif model_name == 'resnet34':
+        model = models.resnet34(pretrained=pretrained)
+        net = nn.Sequential(*list(model.children())[:-2])
+        pool_size = 8
+        final_dense_dim = 512
+    elif model_name == 'resnet50':
+        model = models.resnet50(pretrained=pretrained)
+        net = nn.Sequential(*list(model.children())[:-2])
+        pool_size = 7
+        final_dense_dim = 2048
+    elif model_name == 'resnet101':
+        model = models.resnet101(pretrained=pretrained)
+        net = nn.Sequential(*list(model.children())[:-2])
+        pool_size = 7
+        final_dense_dim = 2048
+    elif model_name == 'resnet152':
+        model = models.resnet152(pretrained=pretrained)
+        net = nn.Sequential(*list(model.children())[:-2])
+        pool_size = 7
+        final_dense_dim = 2048
+    else:
+        raise NotImplementedError
+    print(net)
+    # ここにfine tuningを入れる
+
+    return net, pool_size, final_dense_dim
+
+
+def set_parameter_requires_grad(model, feature_extracting):
+    if feature_extracting:
+        for param in model.parameters():
+            param.requires_grad = False
 
 
 def get_pooling_layer(kernel_size, pooling_method):
@@ -51,10 +87,7 @@ class Model_GlobalPool(nn.Module):
 class Model_WildCat(nn.Module):
     def __init__(self, model_name, pretrained, kmax=1, kmin=None, alpha=1, num_maps=1, num_classes=15):
         super().__init__()
-        self.net = get_pretrained_model(model_name, pretrained)
-        self.features = nn.Sequential(*list(self.net.features))
-        # conv
-        num_features = self.net.features.norm5.num_features
+        self.features, _, num_features = get_pretrained_model(model_name, pretrained)
         self.conv = nn.Conv2d(in_channels=num_features,
                               out_channels=num_classes*num_maps,
                               kernel_size=1,
