@@ -160,6 +160,10 @@ def main():
 
                     if phase == 'train':
                         loss.backward()
+                        utils.gradient_clip.clipping(model,
+                                                     ini.getboolean('gradient_clip', 'is_clip'),
+                                                     ini.getboolean('gradient_clip', 'is_norm'),
+                                                     ini.getfloat('gradient_clip', 'value'))
                         optimizer.step()
 
                 epoch_loss.append(loss.item())
