@@ -45,7 +45,7 @@ class Model_GlobalPool(nn.Module):
         pool = pool.view(pool.size(0), -1)
         out = self.fc(pool)
         # out = nn.Sigmoid()(out)
-        out = F.sigmoid(out)
+        out = torch.sigmoid(out)
         return conv, pool, out
 
 class Model_WildCat(nn.Module):
@@ -73,5 +73,5 @@ class Model_WildCat(nn.Module):
         features = self.features(x)
         cmap = self.cwp(features)
         sp = self.sp(cmap)
-        out = F.sigmoid(sp)
+        out = torch.sigmoid(sp)
         return cmap, sp, out

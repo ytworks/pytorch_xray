@@ -36,10 +36,14 @@ def main():
         model = inference.Model_WildCat(model_name=ini.get('network', 'pretrained_model'),
                                         pretrained=ini.getboolean(
                                             'network', 'pretrained'),
-                                        kmax=ini.getfloat('network', 'wc_kmax'),
-                                        kmin=ini.getfloat('network', 'wc_kmin'),
-                                        alpha=ini.getfloat('network', 'wc_alpha'),
-                                        num_maps=ini.getint('network', 'num_maps'),
+                                        kmax=ini.getfloat(
+                                            'network', 'wc_kmax'),
+                                        kmin=ini.getfloat(
+                                            'network', 'wc_kmin'),
+                                        alpha=ini.getfloat(
+                                            'network', 'wc_alpha'),
+                                        num_maps=ini.getint(
+                                            'network', 'num_maps'),
                                         num_classes=ini.getint('network', 'num_classes'))
     checkpoint = {'epoch': None,
                   'optimizer': None,
@@ -100,7 +104,8 @@ def main():
                                          ini.getfloat('optimizer', 'momentum'),
                                          ini.getfloat(
                                              'optimizer', 'weight_decay'),
-                                          ini.get('optimizer', 'scheduler_type'),
+                                         ini.get('optimizer',
+                                                 'scheduler_type'),
                                          ini.getint(
                                              'optimizer', 'lr_decay_steps'),
                                          ini.getfloat('optimizer', 'lr_decay_rate'))
@@ -189,10 +194,20 @@ def main():
             # message
             epoch_loss = np.mean(epoch_loss)
             auc_msg = ''
+            auc_abnormal = []
             for idx, finding in enumerate(label_list):
                 auc_msg += finding + ':' + \
                     '{score:.3f}'.format(score=aucs[idx]) + ', '
-            print(auc_msg)
+                if idx != 10:
+                    auc_abnormal.append(aucs[idx])
+            abnormal_mean_auc = np.mean(auc_abnormal)
+            print(auc_msg, 'average:',
+                  '{score:.3f}'.format(score=mean_auc),
+                  'abnormal average:',
+                  '{score:.3f}'.format(score=abnormal_mean_auc),
+                  )
+            auc_msg += 'average:' + '{score:.3f}'.format(
+                score=mean_auc) + 'abnormal average:' + '{score:.3f}'.format(score=abnormal_mean_auc)
             epoch_result[phase]['loss'] = epoch_loss
             epoch_result[phase]['all_auc'] = aucs
             epoch_result[phase]['mean_auc'] = mean_auc
