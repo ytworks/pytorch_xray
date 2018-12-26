@@ -100,6 +100,7 @@ def main():
                                          ini.getfloat('optimizer', 'momentum'),
                                          ini.getfloat(
                                              'optimizer', 'weight_decay'),
+                                          ini.get('optimizer', 'scheduler_type'),
                                          ini.getint(
                                              'optimizer', 'lr_decay_steps'),
                                          ini.getfloat('optimizer', 'lr_decay_rate'))
@@ -160,7 +161,7 @@ def main():
             epoch_labels = np.concatenate(epoch_labels, axis=0)
             epoch_preds = np.concatenate(epoch_preds, axis=0)
             aucs = calc_auc(epoch_labels, epoch_preds)
-            mean_auc = np.mean(aucs[1:])
+            mean_auc = np.mean(aucs)
 
             if phase == 'valid':
                 if mean_auc > best_valid_auc:
