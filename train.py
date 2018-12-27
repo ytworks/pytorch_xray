@@ -25,30 +25,46 @@ def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     # model
     ckpt_save_path = ini.get('model', 'ckpt_path')
-    if ini.get('network', 'pool_type') != 'wildcat':
-        model = inference.Model_GlobalPool(model_name=ini.get('network', 'pretrained_model'),
-                                           pretrained=ini.getboolean(
-                                               'network', 'pretrained'),
-                                           pooling=ini.get(
-                                               'network', 'global_pool_type'),
-                                           num_classes=ini.getint(
-                                               'network', 'num_classes'),
-                                           fine_tuning=ini.getboolean('network', 'fine_tuning'))
+    if ini.get('network', 'pretrained_model') == 'custom':
+        model = utils.custom.Model_CUSTOM(model_name=ini.get('network', 'pretrained_model'),
+                                          pretrained=ini.getboolean(
+                                              'network', 'pretrained'),
+                                          kmax=ini.getfloat(
+                                              'network', 'wc_kmax'),
+                                          kmin=ini.getfloat(
+                                              'network', 'wc_kmin'),
+                                          alpha=ini.getfloat(
+                                              'network', 'wc_alpha'),
+                                          num_maps=ini.getint(
+                                              'network', 'num_maps'),
+                                          num_classes=ini.getint(
+                                              'network', 'num_classes'),
+                                          fine_tuning=ini.getboolean('network', 'fine_tuning'))
     else:
-        model = inference.Model_WildCat(model_name=ini.get('network', 'pretrained_model'),
-                                        pretrained=ini.getboolean(
-                                            'network', 'pretrained'),
-                                        kmax=ini.getfloat(
-                                            'network', 'wc_kmax'),
-                                        kmin=ini.getfloat(
-                                            'network', 'wc_kmin'),
-                                        alpha=ini.getfloat(
-                                            'network', 'wc_alpha'),
-                                        num_maps=ini.getint(
-                                            'network', 'num_maps'),
-                                        num_classes=ini.getint(
-                                            'network', 'num_classes'),
-                                        fine_tuning=ini.getboolean('network', 'fine_tuning'))
+        if ini.get('network', 'pool_type') != 'wildcat':
+            model = inference.Model_GlobalPool(model_name=ini.get('network', 'pretrained_model'),
+                                               pretrained=ini.getboolean(
+                                                   'network', 'pretrained'),
+                                               pooling=ini.get(
+                                                   'network', 'global_pool_type'),
+                                               num_classes=ini.getint(
+                                                   'network', 'num_classes'),
+                                               fine_tuning=ini.getboolean('network', 'fine_tuning'))
+        else:
+            model = inference.Model_WildCat(model_name=ini.get('network', 'pretrained_model'),
+                                            pretrained=ini.getboolean(
+                                                'network', 'pretrained'),
+                                            kmax=ini.getfloat(
+                                                'network', 'wc_kmax'),
+                                            kmin=ini.getfloat(
+                                                'network', 'wc_kmin'),
+                                            alpha=ini.getfloat(
+                                                'network', 'wc_alpha'),
+                                            num_maps=ini.getint(
+                                                'network', 'num_maps'),
+                                            num_classes=ini.getint(
+                                                'network', 'num_classes'),
+                                            fine_tuning=ini.getboolean('network', 'fine_tuning'))
     checkpoint = {'epoch': None,
                   'optimizer': None,
                   'scheduler': None,
@@ -112,7 +128,8 @@ def main():
                                                  'scheduler_type'),
                                          ini.getint(
                                              'optimizer', 'lr_decay_steps'),
-                                         ini.getfloat('optimizer', 'lr_decay_rate'),
+                                         ini.getfloat(
+                                             'optimizer', 'lr_decay_rate'),
                                          ini.getint('optimizer', 'patience'),
                                          ini.getint('optimizer', 'te'),
                                          ini.getint('optimizer', 'tmult'),
