@@ -8,13 +8,34 @@ from torch.utils.data import Dataset
 from PIL import Image
 
 
+class Rotate90(object):
+    def __init__(self, angles):
+        self.angles = angles
+
+    def __call__(self, img):
+        if len(self.angles) == 1:
+            return img
+        else:
+            angle = np.random.choice(self.angles)
+        return transforms.functional.rotate(img, angle)
+
+    def __repr__(self):
+        return self.__class__.__name__
+
+
 def get_transform(ini):
+    angles = [
+        0, 90, -90] if ini.getboolean('augmentation', 'rotate90') else [0]
     data_transforms = {
         'train': transforms.Compose([
             transforms.Resize(ini.getint('augmentation', 'resize_size')),
             transforms.RandomResizedCrop(
                 ini.getint('augmentation', 'crop_size')),
-            transforms.RandomHorizontalFlip(),
+            transforms.RandomHorizontalFlip(
+                p=ini.getfloat('augmentation', 'flip_h')),
+            transforms.RandomVerticalFlip(
+                p=ini.getfloat('augmentation', 'flip_v')),
+            Rotate90(angles),
             transforms.RandomRotation(ini.getint('augmentation', 'rotation')),
             transforms.ToTensor(),
             transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
