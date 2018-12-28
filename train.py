@@ -90,6 +90,8 @@ def main():
     # trainとvalidationとテストの分割
     train_list, val_list, test_list = utils.data_split.data_split(
         ini, label_dict, debug_mode)
+    if ini.getboolean('sampling', 'balance'):
+        train_list = utils.balancer.sampling(ini, train_list, label_dict)
 
     # データオーグメンターション
     trans = dataloader.get_transform(ini)

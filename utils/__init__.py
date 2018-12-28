@@ -7,3 +7,4 @@ from . import wildcat
 from . import gradient_clip
 from . import loss
 from . import custom
+from . import balancer
