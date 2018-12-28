@@ -65,7 +65,7 @@ def main():
                                             num_classes=ini.getint(
                                                 'network', 'num_classes'),
                                             fine_tuning=ini.getboolean('network', 'fine_tuning'))
-    
+
     ckpt = torch.load(ckpt_path, map_location=device)
     model.load_state_dict(ckpt['state_dict'])
     model.eval()
@@ -115,7 +115,7 @@ def main():
     # calculate auc
     epoch_labels = np.concatenate(epoch_labels, axis=0)
     epoch_preds = np.concatenate(epoch_preds, axis=0)
-    aucs = calc_auc(epoch_labels, epoch_preds)
+    aucs, prob_map = calc_auc(epoch_labels, epoch_preds)
     mean_auc = np.mean(aucs)
 
     auc_msg = ''
@@ -133,6 +133,9 @@ def main():
           )
     auc_msg += 'average:' + '{score:.3f}'.format(
         score=mean_auc) + 'abnormal average:' + '{score:.3f}'.format(score=abnormal_mean_auc)
+    # checkpoint update for roc map
+    ckpt['roc_map'] = prob_map
+    torch.save(ckpt, ckpt_path)
 
 
 if __name__=='__main__':

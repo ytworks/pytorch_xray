@@ -71,6 +71,8 @@ def main():
                   'scheduler': None,
                   'state_dict': None,
                   'best_auc': None,
+                  'label_list': None,
+                  'roc_map': None,
                   'is_resume': False}
     # 再学習用の読み込み
     if ini.getboolean('env', 'restore'):
@@ -211,7 +213,7 @@ def main():
             # calculate auc
             epoch_labels = np.concatenate(epoch_labels, axis=0)
             epoch_preds = np.concatenate(epoch_preds, axis=0)
-            aucs = calc_auc(epoch_labels, epoch_preds)
+            aucs, _ = calc_auc(epoch_labels, epoch_preds)
             mean_auc = np.mean(aucs)
 
             if phase == 'valid':
@@ -227,6 +229,8 @@ def main():
                         'scheduler': scheduler,
                         'state_dict': best_weight,
                         'best_auc': best_valid_auc,
+                        'label_list': label_list,
+                        'roc_map': None
                     }
                     if isinstance(scheduler, ReduceLROnPlateau):
                         best_ckpt['scheduler'] = None  # cannot save as pkl
