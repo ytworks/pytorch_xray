@@ -28,18 +28,38 @@ def show_key(ini, section, key):
     print(section + "." + key + " = " + ini.get(section, key))
     return
 
+
 def read_config():
     # パラメータの読み込み
     parser = argparse.ArgumentParser(description='パラメータファイルの読み込み')
-    parser.add_argument('-init', required=True)
+    parser.add_argument('-config', required=True)
     parser.add_argument('--debug',
                         action='store_true',
                         default=False,
                         help='debug mode if this flag is set (default: False)')
     args = parser.parse_args()
-    INI_FILE = args.init
+    INI_FILE = args.config
     print("Config file:", INI_FILE)
     ini = configparser.SafeConfigParser()
     ini.read(INI_FILE, encoding='utf8')
     show_config(ini)
     return ini, args.debug
+
+
+def read_config_for_pred():
+    # パラメータの読み込み
+    parser = argparse.ArgumentParser(description='パラメータファイルの読み込み')
+    parser.add_argument('-config', required=True)
+    parser.add_argument('-file', required=True)
+    parser.add_argument('-dir', required=True)
+    parser.add_argument('--debug',
+                        action='store_true',
+                        default=False,
+                        help='debug mode if this flag is set (default: False)')
+    args = parser.parse_args()
+    INI_FILE = args.config
+    print("Config file:", INI_FILE)
+    ini = configparser.SafeConfigParser()
+    ini.read(INI_FILE, encoding='utf8')
+    show_config(ini)
+    return ini, args.debug, args.file, args.dir
