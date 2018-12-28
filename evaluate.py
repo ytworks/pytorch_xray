@@ -15,6 +15,7 @@ from torch.autograd import Variable
 import time
 from tqdm import tqdm
 from utils.metrics import calc_auc
+import csv
 
 
 def main():
@@ -136,6 +137,13 @@ def main():
     # checkpoint update for roc map
     ckpt['roc_map'] = prob_map
     torch.save(ckpt, ckpt_path)
+    # csvの出力
+    preds, labels = epoch_preds.T, epoch_labels.T
+    for i, l in enumerate(ckpt['label_list']):
+        with open(ini.get('model', 'csv_path').replace('.csv', '_'+l+'.csv'), 'w') as f:
+            writer = csv.writer(f, lineterminator='\n')
+            data = zip(preds[i], labels[i])
+            writer.writerows(data)
 
 
 if __name__=='__main__':
