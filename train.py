@@ -65,24 +65,32 @@ def main():
                                             num_classes=ini.getint(
                                                 'network', 'num_classes'),
                                             fine_tuning=ini.getboolean('network', 'fine_tuning'))
+    # 保存用checkpoint
     checkpoint = {'epoch': None,
                   'optimizer': None,
                   'scheduler': None,
                   'state_dict': None,
                   'best_auc': None,
                   'is_resume': False}
-    # cuda
+    # 再学習用の読み込み
+    if ini.getboolean('env', 'restore'):
+        ckpt_path=ini.get('model', 'restore_path')
+        ckpt = torch.load(ckpt_path, map_location=device)
+        model.load_state_dict(ckpt['state_dict'])
+    # cuda対応
     num_gpu = ini.getint('env', 'num_gpu')
     if num_gpu > 1:
         model = nn.DataParallel(model)
     model.to(device)
     if num_gpu > 0:
         torch.backends.cudnn.benchmark = True
+
     # 教師データの読み込み
     label_dict, label_list = utils.label_maker.get_label(ini)
     # trainとvalidationとテストの分割
     train_list, val_list, test_list = utils.data_split.data_split(
         ini, label_dict, debug_mode)
+
     # データオーグメンターション
     trans = dataloader.get_transform(ini)
     # データセット
@@ -117,6 +125,7 @@ def main():
         'valid': valid_loader,
         'test': test_loader,
     }
+
     # Optimizer and Scheduler
     optimizer, scheduler = get_optimizer(model.parameters(),
                                          ini.get('optimizer', 'type'),
@@ -135,6 +144,7 @@ def main():
                                          ini.getint('optimizer', 'tmult'),
                                          ini.getfloat('optimizer', 'min_lr')
                                          )
+
     # Loss func
     criterion = utils.loss.get_loss(loss_type=ini.get('loss', 'loss_type'),
                                     alpha=ini.getfloat('loss', 'focal_alpha'),
@@ -260,6 +270,7 @@ def main():
         print('Vaiid AUC: ' + epoch_result['valid']['auc_msg'])
         print('Test  AUC: ' + epoch_result['test']['auc_msg'])
 
+        # schedulerの実行
         if scheduler is not None:
             if isinstance(scheduler, ReduceLROnPlateau):
                 # scheduler.step(epoch_result['valid']['loss'])
