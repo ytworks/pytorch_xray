@@ -110,8 +110,10 @@ class predictor(object):
         fname, ext = os.path.splitext(os.path.basename(filepath))
         for i, finding in enumerate(self.ckpt['label_list']):
             a = annos[i]
-            cv2.imwrite(dirname + '/' + fname + '_' + finding + '.png',a)
-        return np.ones(self.ini.getint('network', 'num_classes')) - ps, None
+            f = dirname + '/' + fname + '_' + finding + '.png'
+            cv2.imwrite(f,a)
+            img_path.append(f)
+        return np.ones(self.ini.getint('network', 'num_classes')) - ps, img_path
 
     def get_prob_and_img(self, filepath, dirname, finding=6):
         pass
