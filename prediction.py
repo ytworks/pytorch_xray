@@ -91,9 +91,15 @@ class predictor(object):
             features = features.data.to('cpu').numpy()
         print(probs)
         # 確率を計算する
+        ps = [0 for x in range(self.ini.getint('network', 'num_classes'))]
+        roc_maps = self.ckpt['roc_map']
+        for x in range(self.ini.getint('network', 'num_classes')):
+            for line in roc_maps[x]:
+                if probs[0][x] <= float(line[2]):
+                    ps[x] = float(line[0])
         # アノテーションを得る
         # アノテーションを保存する
-        return None, None
+        return np.ones(self.ini.getint('network', 'num_classes')) - ps, None
 
     def get_prob_and_img(self, filepath, dirname, finding=6):
         pass
@@ -105,7 +111,7 @@ class predictor(object):
     def cam(self, feature_map):
         pass
 
-    def wildcat_map(self):
+    def wildcat_map(self, feature_map):
         pass
 
 
