@@ -151,7 +151,7 @@ class predictor(object):
         return annos
 
 def get_roi_map(image, h, w, original_image):
-    a = np.resize(image, (h, w))
+    a = cv2.resize(image, (h, w))
     img = np.stack((a, a, a), axis=-1)
     img = 255.0 * (img- np.min(img)) / (np.max(img) - np.min(img))
     img = cv2.applyColorMap(img.astype(np.uint8), cv2.COLORMAP_JET)
