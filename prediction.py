@@ -155,7 +155,6 @@ def get_roi_map(image, h, w, original_image):
     img = np.stack((a, a, a), axis=-1)
     img = 255.0 * (img- np.min(img)) / (np.max(img) - np.min(img))
     img = cv2.applyColorMap(img.astype(np.uint8), cv2.COLORMAP_JET)
-    print(img)
     roi_img = cv2.addWeighted(original_image, 0.8, img, 0.2, 0)
     return roi_img
 
