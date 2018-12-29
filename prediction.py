@@ -104,7 +104,7 @@ class predictor(object):
         if self.ini.get('network', 'pool_type') == 'wildcat':
             annos = self.wildcat_map(features, h, w, original_image)
         else:
-            annos = self.cam(features)
+            annos = self.cam(features, h, w, original_image)
         # アノテーションを保存する
         img_path = []
         fname, ext = os.path.splitext(os.path.basename(filepath))
@@ -122,8 +122,8 @@ class predictor(object):
                  findings=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]):
         pass
 
-    def cam(self, feature_map, h, w):
-        pass
+    def cam(self, feature_map, h, w, original_image):
+        return []
 
     def wildcat_map(self, feature_map, h, w, original_image):
         annos = []
