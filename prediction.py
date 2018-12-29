@@ -89,10 +89,9 @@ class predictor(object):
         image = self.trans['val'](image).unsqueeze(0)
         inputs = Variable(image.to(self.device))
         with torch.no_grad():
-            features, _, probs = self.model(inputs)
+            feature_map, _, probs = self.model(inputs)
             probs = probs.data.to('cpu').numpy()
-            features = features.data.to('cpu').numpy()
-        print(probs)
+            features = feature_map.data.to('cpu').numpy()
         # 確率を計算する
         ps = [0 for x in range(self.ini.getint('network', 'num_classes'))]
         roc_maps = self.ckpt['roc_map']
@@ -104,7 +103,7 @@ class predictor(object):
         if self.ini.get('network', 'pool_type') == 'wildcat':
             annos = self.wildcat_map(features, h, w, original_image)
         else:
-            annos = self.cam(features, h, w, original_image)
+            annos = self.cam(feature_map, h, w, original_image)
         # アノテーションを保存する
         img_path = []
         fname, ext = os.path.splitext(os.path.basename(filepath))
@@ -123,7 +122,26 @@ class predictor(object):
         pass
 
     def cam(self, feature_map, h, w, original_image):
-        return []
+        # weightを取得する (MULTI GPU未対応)
+        fc_weight = self.model.fc.weight
+        # weightとfeature_mapからROI mapを作成する
+        feature_map = torch.transpose(feature_map, 1, 3)  # (N, W, H, C)
+        weight = fc_weight.transpose(0, 1)  # (C, num_classes)
+        cam = torch.matmul(feature_map, weight)  # (N, W, H, num_classes)
+        cam = torch.transpose(cam, 1, 3)  # (N, num_classes, H, W)
+        # scaling (sample-wisely)
+        cam = cam.contiguous()
+        cam_flat = cam.view(cam.size(0), -1)  # (N, num_classes * H * W)
+        _min = cam_flat.min(dim=1)[0].view(cam.size(0), 1, 1, 1)  # (N, 1, 1, 1)
+        _max = cam_flat.max(dim=1)[0].view(cam.size(0), 1, 1, 1)  # (N, 1, 1, 1)
+        cam = (cam - _min) / (_max - _min)  # (N, num_classes, H, W)
+        cam = cam.data.to('cpu').numpy()
+        # 重ね合わせイメージを作成する
+        annos = []
+        for m in cam[0]:
+            anno = get_roi_map(m, h, w, original_image)
+            annos.append(anno)
+        return annos
 
     def wildcat_map(self, feature_map, h, w, original_image):
         annos = []
@@ -137,6 +155,7 @@ def get_roi_map(image, h, w, original_image):
     img = np.stack((a, a, a), axis=-1)
     img = 255.0 * (img- np.min(img)) / (np.max(img) - np.min(img))
     img = cv2.applyColorMap(img.astype(np.uint8), cv2.COLORMAP_JET)
+    print(img)
     roi_img = cv2.addWeighted(original_image, 0.8, img, 0.2, 0)
     return roi_img
 
