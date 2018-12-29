@@ -15,6 +15,7 @@ from torch.autograd import Variable
 import time
 from tqdm import tqdm
 from PIL import Image
+import cv2
 
 
 class predictor(object):
@@ -82,6 +83,8 @@ class predictor(object):
         # 画像を読み込む
         with Image.open(filepath) as img:
             image = img.convert('RGB')
+            h, w, _ = np.array(image).shape
+            original_image = np.array(image)
         # 出力結果を得る
         image = self.trans['val'](image).unsqueeze(0)
         inputs = Variable(image.to(self.device))
@@ -98,7 +101,16 @@ class predictor(object):
                 if probs[0][x] <= float(line[2]):
                     ps[x] = float(line[0])
         # アノテーションを得る
+        if self.ini.get('network', 'pool_type') == 'wildcat':
+            annos = self.wildcat_map(features, h, w, original_image)
+        else:
+            annos = self.cam(features)
         # アノテーションを保存する
+        img_path = []
+        fname, ext = os.path.splitext(os.path.basename(filepath))
+        for i, finding in enumerate(self.ckpt['label_list']):
+            a = annos[i]
+            cv2.imwrite(dirname + '/' + fname + '_' + finding + '.png',a)
         return np.ones(self.ini.getint('network', 'num_classes')) - ps, None
 
     def get_prob_and_img(self, filepath, dirname, finding=6):
@@ -108,11 +120,24 @@ class predictor(object):
                  findings=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]):
         pass
 
-    def cam(self, feature_map):
+    def cam(self, feature_map, h, w):
         pass
 
-    def wildcat_map(self, feature_map):
-        pass
+    def wildcat_map(self, feature_map, h, w, original_image):
+        annos = []
+        for m in feature_map[0]:
+            anno = get_roi_map(m, h, w, original_image)
+            annos.append(anno)
+        return annos
+
+def get_roi_map(image, h, w, original_image):
+    a = np.resize(image, (h, w))
+    img = np.stack((a, a, a), axis=-1)
+    img = 255.0 * (img- np.min(img)) / (np.max(img) - np.min(img))
+    img = cv2.applyColorMap(img.astype(np.uint8), cv2.COLORMAP_JET)
+    roi_img = cv2.addWeighted(original_image, 0.8, img, 0.2, 0)
+    return roi_img
+
 
 
 def main():
