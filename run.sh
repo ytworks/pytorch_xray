@@ -1,13 +1,5 @@
 
 
-CUDA_VISIBLE_DEVICES=0 python train.py -config ./experiments/base_cosine.ini
-CUDA_VISIBLE_DEVICES=0 python evaluate.py -config ./experiments/base_cosine.ini
-
-CUDA_VISIBLE_DEVICES=0 python train.py -config ./experiments/base_15.ini
-CUDA_VISIBLE_DEVICES=0 python evaluate.py -config ./experiments/base_15.ini
-
-CUDA_VISIBLE_DEVICES=0 python train.py -config ./experiments/base_balance.ini
-CUDA_VISIBLE_DEVICES=0 python evaluate.py -config ./experiments/base_balance.ini
-
-CUDA_VISIBLE_DEVICES=0 python train.py -config ./experiments/base_custom.ini
-CUDA_VISIBLE_DEVICES=0 python evaluate.py -config ./experiments/base_custom.ini
+python train.py -config ./config/sample_chest_xray14.ini --debug
+python evaluate.py -config ./config/sample_chest_xray14.ini --debug
+python prediction.py -config ./config/sample_chest_xray14.ini -file ./data/JPCLN001.png -dir ./result

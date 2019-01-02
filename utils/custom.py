@@ -134,6 +134,7 @@ class SqEx(nn.Module):
 
 class Model_CUSTOM(nn.Module):
     def __init__(self, model_name, pretrained, kmax=1, kmin=None, alpha=1, num_maps=1, num_classes=15,
+                 is_onehot=False,
                  fine_tuning=False):
         super().__init__()
         model = models.densenet121(pretrained=pretrained)
@@ -172,10 +173,14 @@ class Model_CUSTOM(nn.Module):
         self.sp = nn.Sequential()
         self.sp.add_module('spatial', WildcatPool2d(kmax, kmin, alpha))
         print(self.sp)
+        self.is_onehot = is_onehot
 
     def forward(self, x):
         features = self.features(x)
         cmap = self.cwp(features)
         sp = self.sp(cmap)
-        out = torch.sigmoid(sp)
+        if not self.is_onehot:
+            out = torch.sigmoid(sp)
+        else:
+            out = torch.nn.Softmax(sp)
         return cmap, sp, out

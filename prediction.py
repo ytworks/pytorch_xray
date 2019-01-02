@@ -39,7 +39,8 @@ class predictor(object):
                                                        'network', 'num_maps'),
                                                    num_classes=ini.getint(
                                                        'network', 'num_classes'),
-                                                   fine_tuning=ini.getboolean('network', 'fine_tuning'))
+                                                   fine_tuning=ini.getboolean('network', 'fine_tuning'),
+                                                   is_onehot=ini.getboolean('network', 'is_onehot'))
         else:
             if ini.get('network', 'pool_type') != 'wildcat':
                 self.model = inference.Model_GlobalPool(model_name=ini.get('network', 'pretrained_model'),
@@ -49,7 +50,8 @@ class predictor(object):
                                                             'network', 'global_pool_type'),
                                                         num_classes=ini.getint(
                                                             'network', 'num_classes'),
-                                                        fine_tuning=ini.getboolean('network', 'fine_tuning'))
+                                                        fine_tuning=ini.getboolean('network', 'fine_tuning'),
+                                                        is_onehot=ini.getboolean('network', 'is_onehot'))
             else:
                 self.model = inference.Model_WildCat(model_name=ini.get('network', 'pretrained_model'),
                                                      pretrained=ini.getboolean(
@@ -64,7 +66,8 @@ class predictor(object):
                                                          'network', 'num_maps'),
                                                      num_classes=ini.getint(
                                                          'network', 'num_classes'),
-                                                     fine_tuning=ini.getboolean('network', 'fine_tuning'))
+                                                     fine_tuning=ini.getboolean('network', 'fine_tuning'),
+                                                     is_onehot=ini.getboolean('network', 'is_onehot'))
         self.ckpt = torch.load(ckpt_path, map_location=self.device)
         self.model.load_state_dict(self.ckpt['state_dict'])
         self.model.eval()

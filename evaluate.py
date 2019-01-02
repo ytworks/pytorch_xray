@@ -40,7 +40,8 @@ def main():
                                               'network', 'num_maps'),
                                           num_classes=ini.getint(
                                               'network', 'num_classes'),
-                                          fine_tuning=ini.getboolean('network', 'fine_tuning'))
+                                          fine_tuning=ini.getboolean('network', 'fine_tuning'),
+                                          is_onehot=ini.getboolean('network', 'is_onehot'))
     else:
         if ini.get('network', 'pool_type') != 'wildcat':
             model = inference.Model_GlobalPool(model_name=ini.get('network', 'pretrained_model'),
@@ -50,7 +51,8 @@ def main():
                                                    'network', 'global_pool_type'),
                                                num_classes=ini.getint(
                                                    'network', 'num_classes'),
-                                               fine_tuning=ini.getboolean('network', 'fine_tuning'))
+                                               fine_tuning=ini.getboolean('network', 'fine_tuning'),
+                                               is_onehot=ini.getboolean('network', 'is_onehot'))
         else:
             model = inference.Model_WildCat(model_name=ini.get('network', 'pretrained_model'),
                                             pretrained=ini.getboolean(
@@ -65,7 +67,8 @@ def main():
                                                 'network', 'num_maps'),
                                             num_classes=ini.getint(
                                                 'network', 'num_classes'),
-                                            fine_tuning=ini.getboolean('network', 'fine_tuning'))
+                                            fine_tuning=ini.getboolean('network', 'fine_tuning'),
+                                            is_onehot=ini.getboolean('network', 'is_onehot'))
 
     ckpt = torch.load(ckpt_path, map_location=device)
     model.load_state_dict(ckpt['state_dict'])
