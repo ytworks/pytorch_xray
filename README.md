@@ -15,8 +15,6 @@
 * model (作成したモデル置き場)
 * data (データ置き場)　=> https://nihcc.app.box.com/v/ChestXray-NIHCC のメタデータのみ収録済
 * config (サンプルの設定ファイル置き場)
-* config_release (良い結果が出た設定ファイル置き場)
-* experiments (実験的な設定ファイル置き場)
 * tools (各種データ作成支援ツール)
   * sample_JSRT_download.sh (JSRT胸部X線データ{http://imgcom.jsrt.or.jp/download/}のダウンロードスクリプト)
   * write_roc.py (ROC曲線描画スクリプト)
