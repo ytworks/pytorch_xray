@@ -1,3 +1,7 @@
+# nvidiaからdockerイメージをダウンロードする場合
+#FROM nvcr.io/nvidia/pytorch:18.12.1-py3
+
+# 自作で途中まで作ったdockerイメージを利用する場合(今回はgpu:1.0としている)
 FROM gpu:1.0
 
 # set timezone
