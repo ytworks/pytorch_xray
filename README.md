@@ -28,11 +28,15 @@
 
 # チュートリアル
 1. JSRTの胸部X線データのダウンロード (wgetコマンドが必要なためない場合はインストールしてください)
+
   `` bash ./tools/sample_JSRT_download.sh -f ./sample_data ``
+
 2. 画像データの解凍
+
   `` cd ./sample_data ``
   `` unzip Nodule154images.zip ``
   `` unzip NonNodule93images.zip ``
+
 3. 教師データの作成
 4. dicomをPNGファイルに変換する
 5. 設定ファイルを準備する
