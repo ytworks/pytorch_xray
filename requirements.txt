@@ -8,3 +8,4 @@ tensorboardX==1.5
 tqdm==4.28.1
 matplotlib==2.2.2
 opencv-python==3.4.0.12
+pydicom==1.0.2

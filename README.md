@@ -39,8 +39,20 @@
 
   `` unzip NonNodule93images.zip ``
 
-3. 教師データの作成
-4. dicomをPNGファイルに変換する
+  `` mkdir dicoms ``
+
+  `` mv ./No*/*.dcm ./dicoms ``
+
+3. dicomをPNGファイルに変換する
+
+  `` mkdir ./pngs ``
+
+  `` cd .. ``
+
+  `` python ./tools/dicom2png.py -dicoms ./sample_data/dicoms -pngs ./sample_data/pngs ``
+
+  
+4. 教師データの作成
 5. 設定ファイルを準備する
 6. 訓練データとテストデータを分割する
 7. 訓練を実行する
@@ -50,6 +62,7 @@
 
 # データ作成ツールの使い方
 * JSRTの胸部X線のデータダウンロードスクリプトの使い方
+
   `` bash ./tools/sample_JSRT_download.sh -f (ダウンロードしたい場所を指定する) ``
 
 # 教師データの作成方法
