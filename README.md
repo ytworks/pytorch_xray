@@ -34,7 +34,9 @@
 2. 画像データの解凍
 
   `` cd ./sample_data ``
+
   `` unzip Nodule154images.zip ``
+
   `` unzip NonNodule93images.zip ``
 
 3. 教師データの作成
