@@ -28,31 +28,24 @@
 
 # チュートリアル
 1. JSRTの胸部X線データのダウンロード (wgetコマンドが必要なためない場合はインストールしてください)
-
-  `` bash ./tools/sample_JSRT_download.sh -f ./sample_data ``
+  * ```bash ./tools/sample_JSRT_download.sh -f ./sample_data```
 
 2. 画像データの解凍
-
-  `` cd ./sample_data ``
-
-  `` unzip Nodule154images.zip ``
-
-  `` unzip NonNodule93images.zip ``
-
-  `` mkdir dicoms ``
-
-  `` mv ./No*/*.dcm ./dicoms ``
+  * ```cd ./sample_data```
+  * ```unzip Nodule154images.zip```
+  * ```unzip NonNodule93images.zip```
+  * ```mkdir dicoms```
+  * ```mv ./No*/*.dcm ./dicoms```
 
 3. dicomをPNGファイルに変換する
-
-  `` mkdir ./pngs ``
-
-  `` cd .. ``
-
-  `` python ./tools/dicom2png.py -dicoms ./sample_data/dicoms -pngs ./sample_data/pngs ``
+  * ```mkdir ./pngs```
+  * ```cd ..````
+  * ```python ./tools/dicom2png.py -dicoms ./sample_data/dicoms -pngs ./sample_data/pngs```
 
 
 4. 教師データの作成
+  * ```python ./tools/make_label.py -pngs ./sample_data/pngs -csv ./sample_data/label.csv```
+
 5. 訓練データとテストデータを分割する
 6. 設定ファイルを準備する
 7. 訓練を実行する
@@ -71,5 +64,13 @@
   3. 空欄
   4. 患者ID or dummy
   の形のcsvファイルを作成してください
+
+
+# Docker の利用方法
+* Docker imageをビルドする
+  * ``` docker build -t (作成イメージ名) ./```
+* Docker コンテナを起動する
+  * ```nvidia-docker run -it --rm -v $PWD/Data:/app/src/Data -v $PWD/Log:/app/src/Log -v $PWD/Pics:/app/src/Pics -v```
+
 
 # NIH chest-xray14の事前学習の実行方法
