@@ -48,10 +48,15 @@
   * ```python ./tools/k_fold_split.py -pngs ./sample_data/pngs -csv ./sample_data -k 3```
 
 6. 設定ファイルを準備する
+  * config/sample_JSRT.iniを参照
 7. 訓練を実行する
+  * ```python train.py -config ./config/sample_JSRT.ini ```
 8. 評価モデルを作成する
+  * ```python evaluate.py -config ./config/sample_JSRT.ini```
 9. ROCカーブを描画する
+  * ```python ./tools/write_roc.py -csv ./result/sample_JSRT_normal.csv -png ./result/test.png```
 10. 予測を実行してみる
+  * ```python prediction.py -config ./config/sample_JSRT.ini -file ./data/JPCLN001.png -dir ./result ```
 
 
 # データ作成ツールの使い方
@@ -81,7 +86,7 @@
 * Docker imageをビルドする
   * ``` docker build -t (作成イメージ名) ./```
 * Docker コンテナを起動する
-  * ```nvidia-docker run -it --rm -v $PWD/Data:/app/src/Data -v $PWD/Log:/app/src/Log -v $PWD/Pics:/app/src/Pics -v```
+  * ```nvidia-docker run -it --rm -v (ローカルボリューム):(Docker内ボリューム) (イメージ名)```
 
 
 # NIH chest-xray14の事前学習の実行方法

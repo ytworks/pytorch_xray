@@ -8,7 +8,6 @@ def get_label(ini):
     mlb = MultiLabelBinarizer()
     mlb.fit_transform([set(findings)])
     print('Labels: ', list(mlb.classes_))
-    assert mlb.transform([set(['Atelectasis'])])[0][0] == 1, 'Binarizer Error'
     labels = {}
     for index, row in df.iterrows():
         labels.setdefault(row['filepath'], {})
@@ -16,7 +15,7 @@ def get_label(ini):
         labels[row['filepath']].setdefault(
             'label', np.array(mlb.transform([set(row['findings'].split('|'))])[0]).astype(np.float32))
         labels[row['filepath']].setdefault('patient_id', row['patient_id'])
-        assert len(labels[row['filepath']]['label']) == 15, "Binarizer Error"
+        assert len(labels[row['filepath']]['label']) == ini.getint('network', 'num_classes'), "Binarizer Error"
     return labels, list(mlb.classes_)
 
 
@@ -26,5 +25,5 @@ def get_label_list(ini):
     df.columns = ['filepath', 'findings', 'patient_id']
     findings = list(set([ele for f in df['findings'].unique()
                          for ele in f.split('|')]))
-    assert len(findings) == 15, 'Luck of some findings. Expects 15 types'
+    assert len(findings) == ini.getint('network', 'num_classes'), 'Luck of some findings'
     return df, findings

@@ -75,26 +75,21 @@ def get_pooling_layer(kernel_size, pooling_method):
 
 # paramsの設定で学習係数を層ごとに変えられるらしい
 class Model_GlobalPool(nn.Module):
-    def __init__(self, model_name, pretrained, pooling='max', num_classes=15, is_onehot=False,
+    def __init__(self, model_name, pretrained, pooling='max', num_classes=15,
                  fine_tuning=False):
         super().__init__()
         self.conv, self.pool, self.fc = get_base_model(model_name, pretrained, pooling, num_classes, fine_tuning)
-        self.is_onehot = is_onehot
 
     def forward(self, x):
         conv = self.conv(x)
         pool = self.pool(conv)
         pool = pool.view(pool.size(0), -1)
         out = self.fc(pool)
-        if not self.is_onehot:
-            out = torch.sigmoid(out)
-        else:
-            out = torch.nn.Softmax(out)
+        out = torch.sigmoid(out)
         return conv, pool, out
 
 class Model_WildCat(nn.Module):
     def __init__(self, model_name, pretrained, kmax=1, kmin=None, alpha=1, num_maps=1, num_classes=15,
-                 is_onehot=False,
                  fine_tuning=False):
         super().__init__()
         self.features, _, num_features = get_pretrained_model(model_name, pretrained, fine_tuning)
@@ -111,14 +106,10 @@ class Model_WildCat(nn.Module):
         self.sp = nn.Sequential()
         self.sp.add_module('spatial', WildcatPool2d(kmax, kmin, alpha))
         print(self.sp)
-        self.is_onehot = is_onehot
 
     def forward(self, x):
         features = self.features(x)
         cmap = self.cwp(features)
         sp = self.sp(cmap)
-        if not self.is_onehot:
-            out = torch.sigmoid(sp)
-        else:
-            out = torch.nn.Softmax(sp)
+        out = torch.sigmoid(sp)
         return cmap, sp, out

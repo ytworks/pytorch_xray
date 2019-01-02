@@ -39,8 +39,7 @@ def main():
                                               'network', 'num_maps'),
                                           num_classes=ini.getint(
                                               'network', 'num_classes'),
-                                          fine_tuning=ini.getboolean('network', 'fine_tuning'),
-                                          is_onehot=ini.getboolean('network', 'is_onehot'))
+                                          fine_tuning=ini.getboolean('network', 'fine_tuning'))
     else:
         if ini.get('network', 'pool_type') != 'wildcat':
             model = inference.Model_GlobalPool(model_name=ini.get('network', 'pretrained_model'),
@@ -50,8 +49,7 @@ def main():
                                                    'network', 'global_pool_type'),
                                                num_classes=ini.getint(
                                                    'network', 'num_classes'),
-                                               fine_tuning=ini.getboolean('network', 'fine_tuning'),
-                                               is_onehot=ini.getboolean('network', 'is_onehot'))
+                                               fine_tuning=ini.getboolean('network', 'fine_tuning'))
         else:
             model = inference.Model_WildCat(model_name=ini.get('network', 'pretrained_model'),
                                             pretrained=ini.getboolean(
@@ -66,8 +64,7 @@ def main():
                                                 'network', 'num_maps'),
                                             num_classes=ini.getint(
                                                 'network', 'num_classes'),
-                                            fine_tuning=ini.getboolean('network', 'fine_tuning'),
-                                            is_onehot=ini.getboolean('network', 'is_onehot'))
+                                            fine_tuning=ini.getboolean('network', 'fine_tuning'))
     # 保存用checkpoint
     checkpoint = {'epoch': None,
                   'optimizer': None,
@@ -189,6 +186,7 @@ def main():
             for inputs, labels in tqdm(dataloaders[phase], disable=disable_tqdm):
                 inputs = Variable(inputs.to(device))
                 labels = Variable(labels.to(device))
+
 
                 optimizer.zero_grad()
 
