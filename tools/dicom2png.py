@@ -18,7 +18,7 @@ def read_dicom(file_path):
 
 
 def main():
-    parser = argparse.ArgumentParser(description='パラメータファイルの読み込み')
+    parser = argparse.ArgumentParser(description='DICOMをPNGへ変換')
     parser.add_argument('-dicoms', required=True)
     parser.add_argument('-pngs', required=True)
     args = parser.parse_args()
