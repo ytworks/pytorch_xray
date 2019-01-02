@@ -133,7 +133,7 @@ def main():
           '{score:.3f}'.format(score=abnormal_mean_auc),
           )
     auc_msg += 'average:' + '{score:.3f}'.format(
-        score=mean_auc) + 'abnormal average:' + '{score:.3f}'.format(score=abnormal_mean_auc)
+        score=mean_auc) + ', abnormal average:' + '{score:.3f}'.format(score=abnormal_mean_auc)
     # checkpoint update for roc map
     ckpt['roc_map'] = prob_map
     torch.save(ckpt, ckpt_path)

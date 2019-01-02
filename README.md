@@ -72,7 +72,7 @@
   * ```python ./tools/k_fold_split.py -pngs (pngファイルのディレクトリ) -csv (csvの出力先) -k (k-foldのkの設定)```
 
 * roc描画作成ツールの使い方
-  *
+  * ```python ./tools/write_roc.py -csv (ROCを描きたいデータのファイルパス) -png (グラフの出力場所)```
 
 # 教師データの作成方法
   1. ファイル名
@@ -92,3 +92,9 @@
 # NIH chest-xray14の事前学習の実行方法
   1. https://nihcc.app.box.com/v/ChestXray-NIHCC からデータをダウンロードしてください
   2. チュートリアルと同様の方法で、設定ファイルを準備してください (sample_chest_xray14.iniを編集することで動作します)
+  3. チュートリアルと同様に訓練を実行
+  4. 個別データを用意して、NIH-chestXrayの事前学習モデルをチューニングする (sample_JSRT_from_NIH_Pretrain.iniを参照)
+
+# 技術参考文献
+* pytorchの仕様書 (https://pytorch.org/docs/stable/index.html)
+* pytorchチュートリアル (https://pytorch.org/tutorials/)

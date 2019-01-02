@@ -262,7 +262,7 @@ def main():
                   '{score:.3f}'.format(score=abnormal_mean_auc),
                   )
             auc_msg += 'average:' + '{score:.3f}'.format(
-                score=mean_auc) + 'abnormal average:' + '{score:.3f}'.format(score=abnormal_mean_auc)
+                score=mean_auc) + ', abnormal average:' + '{score:.3f}'.format(score=abnormal_mean_auc)
             epoch_result[phase]['loss'] = epoch_loss
             epoch_result[phase]['all_auc'] = aucs
             epoch_result[phase]['mean_auc'] = mean_auc
