@@ -158,6 +158,7 @@ class Model_CUSTOM(nn.Module):
         self.features.add_module('denseblock4', model.features.denseblock4)
         self.features.add_module('norm5', model.features.norm5)
         print(self.features)
+
         num_features = 1024
         self.conv = nn.Conv2d(in_channels=num_features,
                               out_channels=num_classes*num_maps,

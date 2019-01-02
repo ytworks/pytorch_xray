@@ -78,10 +78,11 @@ class Model_GlobalPool(nn.Module):
     def __init__(self, model_name, pretrained, pooling='max', num_classes=15,
                  fine_tuning=False):
         super().__init__()
-        self.conv, self.pool, self.fc = get_base_model(model_name, pretrained, pooling, num_classes, fine_tuning)
+        self.features, self.pool, self.fc = get_base_model(model_name, pretrained, pooling, num_classes, fine_tuning)
+        print(self.features)
 
     def forward(self, x):
-        conv = self.conv(x)
+        conv = self.features(x)
         pool = self.pool(conv)
         pool = pool.view(pool.size(0), -1)
         out = self.fc(pool)
@@ -98,6 +99,7 @@ class Model_WildCat(nn.Module):
                               kernel_size=1,
                               stride=1, padding=0, dilation=1, groups=1,
                               bias=True)
+        print(self.features)
 
         self.cwp = nn.Sequential()
         self.cwp.add_module('conv', self.conv)

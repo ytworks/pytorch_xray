@@ -78,7 +78,11 @@ def main():
     if ini.getboolean('env', 'restore'):
         ckpt_path=ini.get('model', 'restore_path')
         ckpt = torch.load(ckpt_path, map_location=device)
-        model.load_state_dict(ckpt['state_dict'])
+        pretrained_dict = {}
+        for k, v in ckpt['state_dict'].items():
+            if k.find('features') > -1:
+                pretrained_dict.setdefault(k, v)
+        model.load_state_dict(pretrained_dict, strict=False)
     # cuda対応
     num_gpu = ini.getint('env', 'num_gpu')
     if num_gpu > 1:
