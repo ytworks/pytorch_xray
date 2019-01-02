@@ -39,7 +39,7 @@
 
 3. dicomをPNGファイルに変換する
   * ```mkdir ./pngs```
-  * ```cd ..````
+  * ```cd ..```
   * ```python ./tools/dicom2png.py -dicoms ./sample_data/dicoms -pngs ./sample_data/pngs```
 
 
@@ -47,16 +47,29 @@
   * ```python ./tools/make_label.py -pngs ./sample_data/pngs -csv ./sample_data/label.csv```
 
 5. 訓練データとテストデータを分割する
+  * ```python ./tools/k_fold_split.py -pngs ./sample_data/pngs -csv ./sample_data -k 3```
+
 6. 設定ファイルを準備する
 7. 訓練を実行する
 8. 評価モデルを作成する
-9. 予測を実行してみる
+9. ROCカーブを描画する
+10. 予測を実行してみる
 
 
 # データ作成ツールの使い方
 * JSRTの胸部X線のデータダウンロードスクリプトの使い方
+  * ```bash ./tools/sample_JSRT_download.sh -f (ダウンロードしたい場所を指定する)````
+* JSRT用ラベル作成ツールの使い方
+  * ```python ./tools/make_label.py -pngs (pngファイルのディレクトリ) -csv (csvの出力場所)```
 
-  `` bash ./tools/sample_JSRT_download.sh -f (ダウンロードしたい場所を指定する) ``
+* dicom2png変換ツールの使い方
+  * ```python ./tools/dicom2png.py -dicoms (dicomファイルのディレクトリ) -pngs (pngの出力先)```
+
+* データ分割ツールの使い方 (k-fold cross validationに対応)
+  * ```python ./tools/k_fold_split.py -pngs (pngファイルのディレクトリ) -csv (csvの出力先) -k (k-foldのkの設定)```
+
+* roc描画作成ツールの使い方
+  *
 
 # 教師データの作成方法
   1. ファイル名
@@ -74,3 +87,5 @@
 
 
 # NIH chest-xray14の事前学習の実行方法
+  1. https://nihcc.app.box.com/v/ChestXray-NIHCC からデータをダウンロードしてください
+  2. チュートリアルと同様の方法で、設定ファイルを準備してください (sample_chest_xray14.iniを編集することで動作します)
