@@ -98,3 +98,11 @@
 # 技術参考文献
 * pytorchの仕様書 (https://pytorch.org/docs/stable/index.html)
 * pytorchチュートリアル (https://pytorch.org/tutorials/)
+* class activation mapping (http://cnnlocalization.csail.mit.edu/Zhou_Learning_Deep_Features_CVPR_2016_paper.pdf)
+* wildcat モデル (http://webia.lip6.fr/~cord/pdfs/publis/Durand_WILDCAT_CVPR_2017.pdf)
+* densenet (https://arxiv.org/pdf/1608.06993.pdf)
+* resnet (https://arxiv.org/pdf/1512.03385.pdf)
+* focal loss (https://arxiv.org/pdf/1708.02002.pdf)
+* gradient clipping (http://proceedings.mlr.press/v28/pascanu13.pdf)
+* amsgrad (https://openreview.net/pdf?id=ryQu7f-RZ)
+* cosine annealing (https://arxiv.org/pdf/1608.03983.pdf)
