@@ -134,7 +134,7 @@ class SqEx(nn.Module):
 
 class Model_CUSTOM(nn.Module):
     def __init__(self, model_name, pretrained, kmax=1, kmin=None, alpha=1, num_maps=1, num_classes=15,
-                 fine_tuning=False):
+                 fine_tuning=False, dropout=0.5):
         super().__init__()
         model = models.densenet121(pretrained=pretrained)
         set_parameter_requires_grad(model, fine_tuning)
@@ -169,6 +169,7 @@ class Model_CUSTOM(nn.Module):
         self.cwp = nn.Sequential()
         self.cwp.add_module('conv', self.conv)
         self.cwp.add_module('class_wise', ClassWisePool(num_maps))
+        self.dropout = nn.Dropout2d(p=dropout)
         print(self.cwp)
         self.sp = nn.Sequential()
         self.sp.add_module('spatial', WildcatPool2d(kmax, kmin, alpha))
@@ -177,6 +178,7 @@ class Model_CUSTOM(nn.Module):
     def forward(self, x):
         features = self.features(x)
         cmap = self.cwp(features)
+        cmap = self.dropout(cmap)
         sp = self.sp(cmap)
         out = torch.sigmoid(sp)
         return cmap, sp, out
