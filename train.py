@@ -80,7 +80,7 @@ def main():
         ckpt_path=ini.get('model', 'restore_path')
         ckpt = torch.load(ckpt_path, map_location=device)
         pretrained_dict = {}
-        if ini.getboolean('model', 'transfer_mode'):
+        if ini.getboolean('env', 'transfer_mode'):
             for k, v in ckpt['state_dict'].items():
                 if k.find('features') > -1:
                     pretrained_dict.setdefault(k, v)
