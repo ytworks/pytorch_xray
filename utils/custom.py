@@ -141,12 +141,12 @@ class Model_CUSTOM(nn.Module):
         self.se1 = CBAM(128)
         self.se2 = CBAM(256)
         self.se3 = CBAM(512)
-        self.conv1 = nn.Conv2d(in_channels=3,
-                               out_channels=3,
+        self.conv1 = nn.Conv2d(in_channels=5,
+                               out_channels=5,
                                kernel_size=3,
                                stride=2, padding=0, dilation=1, groups=1, bias=True)
-        self.conv2 = nn.Conv2d(in_channels=3,
-                               out_channels=3,
+        self.conv2 = nn.Conv2d(in_channels=5,
+                               out_channels=5,
                                kernel_size=3,
                                stride=2, padding=0, dilation=1, groups=1, bias=True)
         self.features = nn.Sequential()
