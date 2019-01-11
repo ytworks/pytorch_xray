@@ -40,7 +40,8 @@ def main():
                                               'network', 'num_maps'),
                                           num_classes=ini.getint(
                                               'network', 'num_classes'),
-                                          fine_tuning=ini.getboolean('network', 'fine_tuning'))
+                                          fine_tuning=ini.getboolean('network', 'fine_tuning'),
+                                          dropout=ini.getfloat('network', 'dropout'))
     else:
         if ini.get('network', 'pool_type') != 'wildcat':
             model = inference.Model_GlobalPool(model_name=ini.get('network', 'pretrained_model'),

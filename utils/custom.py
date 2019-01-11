@@ -134,14 +134,24 @@ class SqEx(nn.Module):
 
 class Model_CUSTOM(nn.Module):
     def __init__(self, model_name, pretrained, kmax=1, kmin=None, alpha=1, num_maps=1, num_classes=15,
-                 fine_tuning=False):
+                 fine_tuning=False, dropout=0.5):
         super().__init__()
         model = models.densenet121(pretrained=pretrained)
         set_parameter_requires_grad(model, fine_tuning)
         self.se1 = CBAM(128)
         self.se2 = CBAM(256)
         self.se3 = CBAM(512)
+        self.conv1 = nn.Conv2d(in_channels=3,
+                               out_channels=3,
+                               kernel_size=3,
+                               stride=2, padding=0, dilation=1, groups=1, bias=True)
+        self.conv2 = nn.Conv2d(in_channels=3,
+                               out_channels=3,
+                               kernel_size=3,
+                               stride=2, padding=0, dilation=1, groups=1, bias=True)
         self.features = nn.Sequential()
+        self.features.add_module('c1', self.conv1)
+        self.features.add_module('c2', self.conv2)
         self.features.add_module('conv0', model.features.conv0)
         self.features.add_module('norm0', model.features.norm0)
         self.features.add_module('relu0', model.features.relu0)
@@ -169,6 +179,7 @@ class Model_CUSTOM(nn.Module):
         self.cwp = nn.Sequential()
         self.cwp.add_module('conv', self.conv)
         self.cwp.add_module('class_wise', ClassWisePool(num_maps))
+        self.dropout = nn.Dropout2d(p=dropout)
         print(self.cwp)
         self.sp = nn.Sequential()
         self.sp.add_module('spatial', WildcatPool2d(kmax, kmin, alpha))
@@ -177,6 +188,7 @@ class Model_CUSTOM(nn.Module):
     def forward(self, x):
         features = self.features(x)
         cmap = self.cwp(features)
+        cmap = self.dropout(cmap)
         sp = self.sp(cmap)
         out = torch.sigmoid(sp)
         return cmap, sp, out

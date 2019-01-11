@@ -39,7 +39,8 @@ def main():
                                               'network', 'num_maps'),
                                           num_classes=ini.getint(
                                               'network', 'num_classes'),
-                                          fine_tuning=ini.getboolean('network', 'fine_tuning'))
+                                          fine_tuning=ini.getboolean('network', 'fine_tuning'),
+                                          dropout=ini.getfloat('network', 'dropout'))
     else:
         if ini.get('network', 'pool_type') != 'wildcat':
             model = inference.Model_GlobalPool(model_name=ini.get('network', 'pretrained_model'),
@@ -79,10 +80,14 @@ def main():
         ckpt_path=ini.get('model', 'restore_path')
         ckpt = torch.load(ckpt_path, map_location=device)
         pretrained_dict = {}
-        for k, v in ckpt['state_dict'].items():
-            if k.find('features') > -1:
-                pretrained_dict.setdefault(k, v)
-        model.load_state_dict(pretrained_dict, strict=False)
+        if ini.getboolean('env', 'transfer_mode'):
+            for k, v in ckpt['state_dict'].items():
+                if k.find('features') > -1:
+                    pretrained_dict.setdefault(k, v)
+            model.load_state_dict(pretrained_dict, strict=False)
+        else:
+            model.load_state_dict(ckpt['state_dict'], strict=True)
+
     # cuda対応
     num_gpu = ini.getint('env', 'num_gpu')
     if num_gpu > 1:

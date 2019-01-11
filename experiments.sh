@@ -1,5 +1,5 @@
-python train.py -config ./focal.ini
-python evaluate.py -config ./focal.ini
+#CUDA_VISIBLE_DEVICES=0,1,2,3 python train.py -config ./fine_tuning.ini
+#CUDA_VISIBLE_DEVICES=0,1,2,3 python evaluate.py -config ./fine_tuning.ini
 
-python train.py -config ./balance.ini
-python evaluate.py -config ./balance.ini
+CUDA_VISIBLE_DEVICES=0,1,2 python train.py -config ./transfer.ini
+CUDA_VISIBLE_DEVICES=0,1,2 python evaluate.py -config ./transfer.ini
