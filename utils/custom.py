@@ -149,10 +149,11 @@ class Model_CUSTOM(nn.Module):
                                out_channels=3,
                                kernel_size=3,
                                stride=2, padding=0, dilation=1, groups=1, bias=True)
+        print(self.conv1.weight)
         self.conv1.weight.full_([[1./16., 2./16., 1./16.],
                                  [2./16., 4./16., 2./16.],
                                  [1./16., 2./16., 1./16.]])
-        self.conv2.weight.full_([[1./16., 2./16., 1./16.], 
+        self.conv2.weight.full_([[1./16., 2./16., 1./16.],
                                  [2./16., 4./16., 2./16.],
                                  [1./16., 2./16., 1./16.]])
         self.features = nn.Sequential()
