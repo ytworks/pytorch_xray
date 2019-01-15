@@ -168,9 +168,11 @@ class Model_CUSTOM(nn.Module):
         kernel = [[1. / 16., 2. / 16., 1. / 16.],
                   [2. / 16., 4. / 16., 2. / 16.],
                   [1. / 16., 2. / 16., 1. / 16.]]
-        kernel = [kernel, kernel, kernel]
-        kernel = [kernel, kernel, kernel]
-        gf = torch.from_numpy(np.array(kernel).astype(np.float32))
+        filter = [[kernel, np.zeros((3,3)), np.zeros((3,3))],
+                  [np.zeros((3,3)), kernel, np.zeros((3,3))],
+                  [np.zeros((3,3)), np.zeros((3,3)), kernel]
+                  ]
+        gf = torch.from_numpy(np.array(filter).astype(np.float32))
 
         self.conv1.weight = torch.nn.Parameter(gf)
         self.conv2.weight = torch.nn.Parameter(gf)
