@@ -170,8 +170,8 @@ class Model_CUSTOM(nn.Module):
                   [1. / 16., 2. / 16., 1. / 16.]]
         kernel = [kernel, kernel, kernel]
         kernel = [kernel, kernel, kernel]
-        gf = torch.from_numpy(np.array(kernel))
-        
+        gf = torch.from_numpy(np.array(kernel).astype(np.float32))
+
         self.conv1.weight = torch.nn.Parameter(gf)
         self.conv2.weight = torch.nn.Parameter(gf)
         self.features = nn.Sequential()
