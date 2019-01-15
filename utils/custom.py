@@ -169,7 +169,6 @@ class Model_CUSTOM(nn.Module):
                                         [1. / 16., 2. / 16., 1. / 16.]]))
         self.conv1.weight = torch.nn.Parameter(gf)
         self.conv2.weight = torch.nn.Parameter(gf)
-        print(self.conv1.weight)
         self.features = nn.Sequential()
         self.features.add_module('c1', self.conv1)
         self.features.add_module('c2', self.conv2)
