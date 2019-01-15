@@ -100,11 +100,12 @@ class predictor(object):
             for line in roc_maps[x]:
                 if probs[0][x] <= float(line[2]):
                     ps[x] = float(line[0])
+        ps = np.ones(self.ini.getint('network', 'num_classes')) - ps
         # アノテーションを得る
         if self.ini.get('network', 'pool_type') == 'wildcat':
-            annos = self.wildcat_map(features, h, w, original_image)
+            annos = self.wildcat_map(features, h, w, original_image, ps)
         else:
-            annos = self.cam(feature_map, h, w, original_image)
+            annos = self.cam(feature_map, h, w, original_image, ps)
         # アノテーションを保存する
         img_path = []
         fname, ext = os.path.splitext(os.path.basename(filepath))
@@ -113,7 +114,7 @@ class predictor(object):
             f = dirname + '/' + fname + '_' + finding + '.png'
             cv2.imwrite(f,a)
             img_path.append(f)
-        return np.ones(self.ini.getint('network', 'num_classes')) - ps, img_path
+        return ps, img_path
 
     def get_prob_and_img(self, filepath, dirname, finding=6):
         pass
@@ -122,7 +123,7 @@ class predictor(object):
                  findings=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]):
         pass
 
-    def cam(self, feature_map, h, w, original_image):
+    def cam(self, feature_map, h, w, original_image, ps):
         # weightを取得する (MULTI GPU未対応)
         fc_weight = self.model.fc.weight
         # weightとfeature_mapからROI mapを作成する
@@ -139,26 +140,25 @@ class predictor(object):
         cam = cam.data.to('cpu').numpy()
         # 重ね合わせイメージを作成する
         annos = []
-        for m in cam[0]:
-            anno = get_roi_map(m, h, w, original_image)
+        for i, m in enumerate(cam[0]):
+            anno = get_roi_map(m, h, w, original_image, ps[i])
             annos.append(anno)
         return annos
 
-    def wildcat_map(self, feature_map, h, w, original_image):
+    def wildcat_map(self, feature_map, h, w, original_image, ps):
         annos = []
-        for m in feature_map[0]:
-            anno = get_roi_map(m, h, w, original_image)
+        for i, m in enumerate(feature_map[0]):
+            anno = get_roi_map(m, h, w, original_image, ps[i])
             annos.append(anno)
         return annos
 
-def get_roi_map(image, h, w, original_image):
+def get_roi_map(image, h, w, original_image, p):
     a = cv2.resize(image, (h, w))
     img = np.stack((a, a, a), axis=-1)
-    img = 255.0 * (img- np.min(img)) / (np.max(img) - np.min(img))
+    img = p * 255.0 * (img- np.min(img)) / (np.max(img) - np.min(img))
     img = cv2.applyColorMap(img.astype(np.uint8), cv2.COLORMAP_JET)
     roi_img = cv2.addWeighted(original_image, 0.8, img, 0.2, 0)
     return roi_img
-
 
 
 def main():
