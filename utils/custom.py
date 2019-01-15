@@ -143,12 +143,18 @@ class Model_CUSTOM(nn.Module):
         self.se3 = CBAM(512)
         self.conv1 = nn.Conv2d(in_channels=3,
                                out_channels=3,
-                               kernel_size=5,
+                               kernel_size=3,
                                stride=2, padding=0, dilation=1, groups=1, bias=True)
         self.conv2 = nn.Conv2d(in_channels=3,
                                out_channels=3,
-                               kernel_size=5,
+                               kernel_size=3,
                                stride=2, padding=0, dilation=1, groups=1, bias=True)
+        self.conv1.weight.full_([[1./16., 2./16., 1./16.],
+                                 [2./16., 4./16., 2./16.],
+                                 [1./16., 2./16., 1./16.]])
+        self.conv2.weight.full_([[1./16., 2./16., 1./16.], 
+                                 [2./16., 4./16., 2./16.],
+                                 [1./16., 2./16., 1./16.]])
         self.features = nn.Sequential()
         self.features.add_module('c1', self.conv1)
         self.features.add_module('c2', self.conv2)
