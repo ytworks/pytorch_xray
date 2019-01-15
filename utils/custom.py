@@ -164,12 +164,11 @@ class Model_CUSTOM(nn.Module):
                                out_channels=3,
                                kernel_size=3,
                                stride=2, padding=0, dilation=1, groups=1, bias=False)
-        self.conv1.weight = torch.nn.Parameter([[1. / 16., 2. / 16., 1. / 16.],
-                                                [2. / 16., 4. / 16., 2. / 16.],
-                                                [1. / 16., 2. / 16., 1. / 16.]])
-        self.conv2.weight = torch.nn.Parameter([[1. / 16., 2. / 16., 1. / 16.],
-                                                [2. / 16., 4. / 16., 2. / 16.],
-                                                [1. / 16., 2. / 16., 1. / 16.]])
+        gf = torch.from_numpy(np.array([[1. / 16., 2. / 16., 1. / 16.],
+                                        [2. / 16., 4. / 16., 2. / 16.],
+                                        [1. / 16., 2. / 16., 1. / 16.]]))
+        self.conv1.weight = torch.nn.Parameter(gf)
+        self.conv2.weight = torch.nn.Parameter(gf)
         print(self.conv1.weight)
         self.features = nn.Sequential()
         self.features.add_module('c1', self.conv1)
