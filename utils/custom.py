@@ -157,8 +157,6 @@ class Model_CUSTOM(nn.Module):
         self.se2 = CBAM(256)
         self.se3 = CBAM(512)
         self.features = nn.Sequential()
-        self.features.add_module('c1', self.conv1)
-        self.features.add_module('c2', self.conv2)
         self.features.add_module('conv0', model.features.conv0)
         self.features.add_module('norm0', model.features.norm0)
         self.features.add_module('relu0', model.features.relu0)
