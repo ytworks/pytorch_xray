@@ -156,8 +156,6 @@ class Model_CUSTOM(nn.Module):
         self.se1 = CBAM(128)
         self.se2 = CBAM(256)
         self.se3 = CBAM(512)
-        self.se4 = CBAM(1024)
-        self.se5 = CBAM(32*num_maps)
         self.features = nn.Sequential()
         self.features.add_module('conv0', model.features.conv0)
         self.features.add_module('norm0', model.features.norm0)
@@ -177,12 +175,13 @@ class Model_CUSTOM(nn.Module):
         print(self.features)
 
         num_features = 1024
+        self.se4 = CBAM(num_features)
         self.conv = nn.Conv2d(in_channels=num_features,
                               out_channels=num_classes * num_maps,
                               kernel_size=1,
                               stride=1, padding=0, dilation=1, groups=1,
                               bias=True)
-
+        self.se5 = CBAM(num_classes * num_maps)
         self.cwp = nn.Sequential()
         self.cwp.add_module('se4', self.se4)
         self.cwp.add_module('conv', self.conv)
