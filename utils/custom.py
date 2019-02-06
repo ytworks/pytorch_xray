@@ -156,6 +156,8 @@ class Model_CUSTOM(nn.Module):
         self.se1 = CBAM(128)
         self.se2 = CBAM(256)
         self.se3 = CBAM(512)
+        self.se4 = CBAM(1024)
+        self.se5 = CBAM(1024*num_maps)
         self.features = nn.Sequential()
         self.features.add_module('conv0', model.features.conv0)
         self.features.add_module('norm0', model.features.norm0)
@@ -182,7 +184,9 @@ class Model_CUSTOM(nn.Module):
                               bias=True)
 
         self.cwp = nn.Sequential()
+        self.cwp.add_module('se4', self.se4)
         self.cwp.add_module('conv', self.conv)
+        self.cwp.add_module('se5', self.se5)
         self.cwp.add_module('class_wise', ClassWisePool(num_maps))
         self.dropout = nn.Dropout2d(p=dropout)
         print(self.cwp)
