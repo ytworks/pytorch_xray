@@ -181,11 +181,9 @@ class Model_CUSTOM(nn.Module):
                               kernel_size=1,
                               stride=1, padding=0, dilation=1, groups=1,
                               bias=True)
-        self.se5 = CBAM(num_classes * num_maps)
         self.cwp = nn.Sequential()
         self.cwp.add_module('se4', self.se4)
         self.cwp.add_module('conv', self.conv)
-        self.cwp.add_module('se5', self.se5)
         self.cwp.add_module('class_wise', ClassWisePool(num_maps))
         self.dropout = nn.Dropout2d(p=dropout)
         print(self.cwp)
