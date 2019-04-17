@@ -4,7 +4,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.autograd import Variable
-from torchvision import models
+from torchvision import models, transforms
 from .wildcat import *
 
 
@@ -67,6 +67,9 @@ class Generative_Model(nn.Module):
         self.sp = nn.Sequential()
         self.sp.add_module('spatial', WildcatPool2d(kmax, kmin, alpha))
         print(self.sp)
+        self.transforms = transforms.Compose([
+            transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+        ])
 
     def reparameterize(self, mu, logvar):
         std = torch.exp(0.5*logvar)
@@ -80,9 +83,11 @@ class Generative_Model(nn.Module):
         logvar = self.fc22(h1)
         z = self.reparameterize(mu, logvar)
         h3 = F.relu(self.fc3(z))
-        recon_x = self.fc4(h3)
+        recon_x = F.sigmoid(self.fc4(h3))
+        img = x - recon_x.view(-1, 3, 224, 224)
+        img = self.transforms(img)
         #L1
-        l1 = self.l1(x - recon_x.view(-1, 3, 224, 224))
+        l1 = self.l1(img)
         #L2
         l2 = self.l2(l1)
         #L3

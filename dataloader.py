@@ -38,13 +38,13 @@ def get_transform(ini):
             Rotate90(angles),
             transforms.RandomRotation(ini.getint('augmentation', 'rotation')),
             transforms.ToTensor(),
-            transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+            #transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
         ]),
         'val': transforms.Compose([
             transforms.Resize(ini.getint('augmentation', 'resize_size')),
             transforms.CenterCrop(ini.getint('augmentation', 'crop_size')),
             transforms.ToTensor(),
-            transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+            #transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
         ]), }
     return data_transforms
 
