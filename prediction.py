@@ -41,6 +41,16 @@ class predictor(object):
                                                        'network', 'num_classes'),
                                                    fine_tuning=ini.getboolean('network', 'fine_tuning'),
                                                    dropout=ini.getfloat('network', 'dropout'))
+        elif ini.get('network', 'pretrained_model') == 'generative_model':
+            model = utils.generative_model.Generative_Model(model_name=ini.get('network', 'pretrained_model'),
+                                                            pretrained=ini.getboolean('network', 'pretrained'),
+                                                            kmax=ini.getfloat('network', 'wc_kmax'),
+                                                            kmin=ini.getfloat('network', 'wc_kmin'),
+                                                            alpha=ini.getfloat('network', 'wc_alpha'),
+                                                            num_maps=ini.getint('network', 'num_maps'),
+                                                            num_classes=ini.getint('network', 'num_classes'),
+                                                            fine_tuning=ini.getboolean('network', 'fine_tuning'),
+                                                            dropout=ini.getfloat('network', 'dropout'))
         else:
             if ini.get('network', 'pool_type') != 'wildcat':
                 self.model = inference.Model_GlobalPool(model_name=ini.get('network', 'pretrained_model'),

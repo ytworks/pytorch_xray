@@ -41,6 +41,16 @@ def main():
                                               'network', 'num_classes'),
                                           fine_tuning=ini.getboolean('network', 'fine_tuning'),
                                           dropout=ini.getfloat('network', 'dropout'))
+    elif ini.get('network', 'pretrained_model') == 'generative_model':
+        model = utils.generative_model.Generative_Model(model_name=ini.get('network', 'pretrained_model'),
+                                                        pretrained=ini.getboolean('network', 'pretrained'),
+                                                        kmax=ini.getfloat('network', 'wc_kmax'),
+                                                        kmin=ini.getfloat('network', 'wc_kmin'),
+                                                        alpha=ini.getfloat('network', 'wc_alpha'),
+                                                        num_maps=ini.getint('network', 'num_maps'),
+                                                        num_classes=ini.getint('network', 'num_classes'),
+                                                        fine_tuning=ini.getboolean('network', 'fine_tuning'),
+                                                        dropout=ini.getfloat('network', 'dropout'))
     else:
         if ini.get('network', 'pool_type') != 'wildcat':
             model = inference.Model_GlobalPool(model_name=ini.get('network', 'pretrained_model'),
@@ -162,6 +172,7 @@ def main():
     criterion = utils.loss.get_loss(loss_type=ini.get('loss', 'loss_type'),
                                     alpha=ini.getfloat('loss', 'focal_alpha'),
                                     gamma=ini.getfloat('loss', 'focal_gamma'))
+    vae_loss = utils.loss.VAELoss()
 
     # Training Loop
     best_valid_auc = 0.
@@ -200,10 +211,14 @@ def main():
                 optimizer.zero_grad()
 
                 with torch.set_grad_enabled(phase == 'train'):
-                    preds = model(inputs)
-                    preds = preds[-1]
+                    preds_all = model(inputs)
+                    preds = preds_all[-1]
+                    recon_x = preds_all[2]
+                    mu = preds_all[3]
+                    logvar = preds_all[4]
 
                     loss = criterion(preds, labels)
+                    loss += vae_loss(recon_x, inputs.view(-1, 224*224*3), mu, logvar)
 
                     epoch_preds.append(preds.data.to('cpu').numpy())
                     epoch_labels.append(labels.data.to('cpu').numpy())

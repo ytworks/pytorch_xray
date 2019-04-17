@@ -27,3 +27,18 @@ def get_loss(loss_type, alpha, gamma):
         return FocalLoss(alpha=alpha, gamma=gamma)
     else:
         raise NotImplementedError
+
+
+class VAELoss(nn.Module):
+    def __init__(self):
+        super(VAELoss, self).__init__()
+
+    def forward(self, recon_x, x, mu, logvar):
+        #BCE = F.binary_cross_entropy(recon_x, x, reduction='sum')
+        MSE = F.mse_loss(recon_x, x, reduction='sum')
+        # see Appendix B from VAE paper:
+        # Kingma and Welling. Auto-Encoding Variational Bayes. ICLR, 2014
+        # https://arxiv.org/abs/1312.6114
+        # 0.5 * sum(1 + log(sigma^2) - mu^2 - sigma^2)
+        KLD = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())
+        return MSE + KLD
