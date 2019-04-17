@@ -20,11 +20,11 @@ class Generative_Model(nn.Module):
                  fine_tuning=False, dropout=0.5):
         super().__init__()
         # VAE
-        self.fc1 = nn.Linear(224*224*3, 56*56)
-        self.fc21 = nn.Linear(56*56, 64)
-        self.fc22 = nn.Linear(56*56, 64)
-        self.fc3 = nn.Linear(64, 56*56)
-        self.fc4 = nn.Linear(56*56, 224*224*3)
+        self.fc1 = nn.Linear(224*224*3, 512)
+        self.fc21 = nn.Linear(512, 64)
+        self.fc22 = nn.Linear(512, 64)
+        self.fc3 = nn.Linear(64, 512)
+        self.fc4 = nn.Linear(512, 224*224*3)
 
 
         model = models.resnet34(pretrained=pretrained)
