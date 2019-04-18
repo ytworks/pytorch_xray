@@ -80,7 +80,8 @@ class Generative_Model(nn.Module):
         logvar = self.fc22(h1)
         z = self.reparameterize(mu, logvar)
         h3 = F.relu(self.fc3(z))
-        recon_x = F.sigmoid(self.fc4(h3))
+        recon_x = torch.sigmoid(self.fc4(h3))
+        print(recon_x)
         img = x - recon_x.view(-1, 3, 224, 224)
         img = self.bn1(img)
         #L1
