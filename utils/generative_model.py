@@ -67,9 +67,6 @@ class Generative_Model(nn.Module):
         self.sp = nn.Sequential()
         self.sp.add_module('spatial', WildcatPool2d(kmax, kmin, alpha))
         print(self.sp)
-        self.transforms = transforms.Compose([
-            transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-        ])
 
     def reparameterize(self, mu, logvar):
         std = torch.exp(0.5*logvar)
@@ -84,12 +81,8 @@ class Generative_Model(nn.Module):
         z = self.reparameterize(mu, logvar)
         h3 = F.relu(self.fc3(z))
         recon_x = F.sigmoid(self.fc4(h3))
-        print(x.shape)
-        print(recon_x.shape)
-        img = x
-        #img = x - recon_x.view(-1, 3, 224, 224)
-        print(img.shape)
-        img = self.transforms(img)
+        img = x - recon_x.view(-1, 3, 224, 224)
+        img = F.normalize(img,[0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
         #L1
         l1 = self.l1(img)
         #L2
