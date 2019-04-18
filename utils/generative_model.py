@@ -84,6 +84,8 @@ class Generative_Model(nn.Module):
         z = self.reparameterize(mu, logvar)
         h3 = F.relu(self.fc3(z))
         recon_x = F.sigmoid(self.fc4(h3))
+        print(x.shape)
+        print(recon_x.shape)
         img = x - recon_x.view(-1, 3, 224, 224)
         img = self.transforms(img)
         #L1
