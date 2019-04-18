@@ -29,9 +29,9 @@ class Generative_Model(nn.Module):
 
         model = models.resnet34(pretrained=pretrained)
         set_parameter_requires_grad(model, fine_tuning)
-        self.features = nn.Sequential()
+        #self.features = nn.Sequential()
         #self.features = nn.Sequential(*list(model.children())[:-2])
-
+        self.bn1 = nn.BatchNorm2d(3)
         #L1
         self.l1 = nn.Sequential()
         self.l1.add_module('conv1', model.conv1)
@@ -82,7 +82,7 @@ class Generative_Model(nn.Module):
         h3 = F.relu(self.fc3(z))
         recon_x = F.sigmoid(self.fc4(h3))
         img = x - recon_x.view(-1, 3, 224, 224)
-        img = F.normalize(img,[0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+        img = self.bn1(img)
         #L1
         l1 = self.l1(img)
         #L2
