@@ -87,6 +87,7 @@ class Generative_Model(nn.Module):
         print(x.shape)
         print(recon_x.shape)
         img = x - recon_x.view(-1, 3, 224, 224)
+        print(img.shape)
         img = self.transforms(img)
         #L1
         l1 = self.l1(img)
