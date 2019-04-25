@@ -156,29 +156,7 @@ class Model_CUSTOM(nn.Module):
         self.se1 = CBAM(128)
         self.se2 = CBAM(256)
         self.se3 = CBAM(512)
-        self.conv1 = nn.Conv2d(in_channels=3,
-                               out_channels=3,
-                               kernel_size=3,
-                               stride=2, padding=0, dilation=1, groups=1, bias=False)
-        self.conv2 = nn.Conv2d(in_channels=3,
-                               out_channels=3,
-                               kernel_size=3,
-                               stride=2, padding=0, dilation=1, groups=1, bias=False)
-        print(self.conv1.weight)
-        kernel = [[1. / 16., 2. / 16., 1. / 16.],
-                  [2. / 16., 4. / 16., 2. / 16.],
-                  [1. / 16., 2. / 16., 1. / 16.]]
-        filter = [[kernel, np.zeros((3,3)), np.zeros((3,3))],
-                  [np.zeros((3,3)), kernel, np.zeros((3,3))],
-                  [np.zeros((3,3)), np.zeros((3,3)), kernel]
-                  ]
-        gf = torch.from_numpy(np.array(filter).astype(np.float32))
-
-        self.conv1.weight = torch.nn.Parameter(gf)
-        self.conv2.weight = torch.nn.Parameter(gf)
         self.features = nn.Sequential()
-        self.features.add_module('c1', self.conv1)
-        self.features.add_module('c2', self.conv2)
         self.features.add_module('conv0', model.features.conv0)
         self.features.add_module('norm0', model.features.norm0)
         self.features.add_module('relu0', model.features.relu0)
