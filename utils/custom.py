@@ -7,6 +7,7 @@ import torch.nn.functional as F
 from torch.autograd import Variable
 from torchvision import models
 from .wildcat import *
+from .arcface import *
 
 
 def set_parameter_requires_grad(model, feature_extracting):
@@ -189,11 +190,15 @@ class Model_CUSTOM(nn.Module):
         self.sp = nn.Sequential()
         self.sp.add_module('spatial', WildcatPool2d(kmax, kmin, alpha))
         print(self.sp)
+        self.arcface = ArcMarginProduct(num_classes, num_classes)
+        print(self.arcface)
 
-    def forward(self, x):
+    def forward(self, x, labels):
         features = self.features(x)
         cmap = self.cwp(features)
         cmap = self.dropout(cmap)
         sp = self.sp(cmap)
+        print(sp.size(), labels.size())
+        sp = self.arcface(sp, labels)
         out = torch.sigmoid(sp)
         return cmap, sp, out

@@ -200,7 +200,9 @@ def main():
                 optimizer.zero_grad()
 
                 with torch.set_grad_enabled(phase == 'train'):
-                    preds = model(inputs)
+                    zeros = torch.zeros(labels.size(), device=device)
+                    input_labels = labels if phase == 'train' else zeros
+                    preds = model(inputs, input_labels)
                     preds = preds[-1]
 
                     loss = criterion(preds, labels)

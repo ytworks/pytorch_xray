@@ -106,9 +106,10 @@ def main():
     for inputs, labels in tqdm(test_loader, disable=disable_tqdm):
         inputs = Variable(inputs.to(device))
         labels = Variable(labels.to(device))
+        zeros = torch.zeros(labels.size(), device=device)
 
         with torch.no_grad():
-            preds = model(inputs)
+            preds = model(inputs, zeros)
             preds = preds[-1]
             epoch_preds.append(preds.data.to('cpu').numpy())
             epoch_labels.append(labels.data.to('cpu').numpy())
