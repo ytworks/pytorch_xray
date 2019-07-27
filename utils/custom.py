@@ -181,16 +181,16 @@ class Model_CUSTOM(nn.Module):
                               kernel_size=1,
                               stride=1, padding=0, dilation=1, groups=1,
                               bias=True)
+        self.features.add_module('conv_features', self.conv)
 
         self.cwp = nn.Sequential()
-        self.cwp.add_module('conv', self.conv)
         self.cwp.add_module('class_wise', ClassWisePool(num_maps))
         self.dropout = nn.Dropout2d(p=dropout)
         print(self.cwp)
         self.sp = nn.Sequential()
         self.sp.add_module('spatial', WildcatPool2d(kmax, kmin, alpha))
         print(self.sp)
-        self.arcface = ArcMarginProduct(num_classes, num_classes)
+        self.arcface = ArcMarginProduct(num_classes * num_maps, num_classes)
         print(self.arcface)
 
     def forward(self, x, labels):
@@ -198,6 +198,7 @@ class Model_CUSTOM(nn.Module):
         cmap = self.cwp(features)
         cmap = self.dropout(cmap)
         sp = self.sp(cmap)
-        sp = self.arcface(sp, labels)
         out = torch.sigmoid(sp)
-        return cmap, sp, out
+        arcface_features = self.sp(features)
+        arcface_logits = torch.sigmoid(self.arcface(arcface_features, labels))
+        return cmap, sp, (out, arcface_logits)

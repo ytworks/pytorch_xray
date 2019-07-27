@@ -205,9 +205,9 @@ def main():
                     preds = model(inputs, input_labels)
                     preds = preds[-1]
 
-                    loss = criterion(preds, labels)
+                    loss = criterion(preds[0], labels) + criterion(preds[1], labels)
 
-                    epoch_preds.append(preds.data.to('cpu').numpy())
+                    epoch_preds.append(preds[0].data.to('cpu').numpy())
                     epoch_labels.append(labels.data.to('cpu').numpy())
 
                     if phase == 'train':

@@ -111,7 +111,7 @@ def main():
         with torch.no_grad():
             preds = model(inputs, zeros)
             preds = preds[-1]
-            epoch_preds.append(preds.data.to('cpu').numpy())
+            epoch_preds.append(preds[0].data.to('cpu').numpy())
             epoch_labels.append(labels.data.to('cpu').numpy())
 
 
