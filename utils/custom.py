@@ -198,7 +198,6 @@ class Model_CUSTOM(nn.Module):
         cmap = self.cwp(features)
         cmap = self.dropout(cmap)
         sp = self.sp(cmap)
-        print(sp.size(), labels.size())
         sp = self.arcface(sp, labels)
         out = torch.sigmoid(sp)
         return cmap, sp, out
