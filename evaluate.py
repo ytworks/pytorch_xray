@@ -111,7 +111,7 @@ def main():
         with torch.no_grad():
             preds = model(inputs, zeros)
             preds = preds[-1]
-            epoch_preds.append(preds[0].data.to('cpu').numpy())
+            epoch_preds.append(preds.data.to('cpu').numpy())
             epoch_labels.append(labels.data.to('cpu').numpy())
 
 
@@ -122,20 +122,14 @@ def main():
     mean_auc = np.mean(aucs)
 
     auc_msg = ''
-    auc_abnormal = []
     for idx, finding in enumerate(label_list):
         auc_msg += finding + ':' + \
             '{score:.3f}'.format(score=aucs[idx]) + ', '
-        if idx != 10:
-            auc_abnormal.append(aucs[idx])
-    abnormal_mean_auc = np.mean(auc_abnormal)
     print(auc_msg, 'average:',
           '{score:.3f}'.format(score=mean_auc),
-          'abnormal average:',
-          '{score:.3f}'.format(score=abnormal_mean_auc),
           )
     auc_msg += 'average:' + '{score:.3f}'.format(
-        score=mean_auc) + ', abnormal average:' + '{score:.3f}'.format(score=abnormal_mean_auc)
+        score=mean_auc)
     # checkpoint update for roc map
     ckpt['roc_map'] = prob_map
     torch.save(ckpt, ckpt_path)

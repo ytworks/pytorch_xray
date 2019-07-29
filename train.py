@@ -205,9 +205,9 @@ def main():
                     preds = model(inputs, input_labels)
                     preds = preds[-1]
 
-                    loss = criterion(preds[0], labels) + 4.0 * criterion(preds[1], labels)
+                    loss = criterion(preds, labels)
 
-                    epoch_preds.append(preds[0].data.to('cpu').numpy())
+                    epoch_preds.append(preds.data.to('cpu').numpy())
                     epoch_labels.append(labels.data.to('cpu').numpy())
 
                     if phase == 'train':
@@ -256,20 +256,14 @@ def main():
             # message
             epoch_loss = np.mean(epoch_loss)
             auc_msg = ''
-            auc_abnormal = []
             for idx, finding in enumerate(label_list):
                 auc_msg += finding + ':' + \
                     '{score:.3f}'.format(score=aucs[idx]) + ', '
-                if idx != 10:
-                    auc_abnormal.append(aucs[idx])
-            abnormal_mean_auc = np.mean(auc_abnormal)
             print(auc_msg, 'average:',
                   '{score:.3f}'.format(score=mean_auc),
-                  'abnormal average:',
-                  '{score:.3f}'.format(score=abnormal_mean_auc),
                   )
             auc_msg += 'average:' + '{score:.3f}'.format(
-                score=mean_auc) + ', abnormal average:' + '{score:.3f}'.format(score=abnormal_mean_auc)
+                score=mean_auc)
             epoch_result[phase]['loss'] = epoch_loss
             epoch_result[phase]['all_auc'] = aucs
             epoch_result[phase]['mean_auc'] = mean_auc
