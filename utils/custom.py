@@ -191,15 +191,14 @@ class Model_CUSTOM(nn.Module):
         self.sp.add_module('spatial', WildcatPool2d(kmax, kmin, alpha))
         print(self.sp)
         self.m = nn.Softmax()
-        #self.arcface = ArcMarginProduct(num_classes * num_maps, num_classes)
-        #print(self.arcface)
+        self.arcface = ArcMarginProduct(num_classes * num_maps, num_classes)
+        print(self.arcface)
 
     def forward(self, x, labels):
         features = self.features(x)
         cmap = self.cwp(features)
-        cmap = self.dropout(cmap)
-        sp = self.sp(cmap)
-        out = self.m(sp)
-        #arcface_features = self.sp(features)
-        #arcface_logits = torch.sigmoid(self.arcface(arcface_features, labels))
+        #cmap = self.dropout(cmap)
+        sp = self.sp(features)
+        arcface_features = self.arcface(sp, labels)
+        out = self.m(arcface_features)
         return cmap, sp, out
