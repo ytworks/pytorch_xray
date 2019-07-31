@@ -190,7 +190,7 @@ class Model_CUSTOM(nn.Module):
         self.sp = nn.Sequential()
         self.sp.add_module('spatial', WildcatPool2d(kmax, kmin, alpha))
         print(self.sp)
-        self.m = nn.Softmax()
+        self.m = nn.Softmax(dim=1)
         self.arcface = ArcMarginProduct(num_classes * num_maps, num_classes)
         print(self.arcface)
 
