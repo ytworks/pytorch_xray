@@ -149,9 +149,10 @@ class SqEx(nn.Module):
 
 
 class L2ConstrainedLinear(nn.Module):
-    def __init__(self, alpha=28):
+    def __init__(self, kernel_size, alpha=28):
         super().__init__()
         self.alpha = alpha
+        self.pool = nn.MaxPool2d(kernel_size=kernel_size)
 
     def forward(self, x, label=None):
         """
@@ -161,10 +162,9 @@ class L2ConstrainedLinear(nn.Module):
         num_channels = x.size(1)
         h = x.size(2)
         w = x.size(3)
-        v = x.view(batch_size, num_channels * h * w)
+        v = self.pool(x)
         v = F.normalize(v, p=2, dim=1)
-        v = x.view(batch_size, num_channels, h, w)
-        v = self.alpha * v
+        v = self.alpha * (torch.matmul(v, x))
         return v
 
 
