@@ -157,7 +157,7 @@ class L2ConstrainedLinear(nn.Module):
         """
         x: features from CNN. shape => (N, C)
         """
-        atch_size = x.size(0)
+        batch_size = x.size(0)
         num_channels = x.size(1)
         h = x.size(2)
         w = x.size(3)
