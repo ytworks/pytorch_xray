@@ -148,6 +148,26 @@ class SqEx(nn.Module):
         return y
 
 
+class L2ConstrainedLinear(nn.Module):
+    def __init__(self, alpha=28):
+        super().__init__()
+        self.alpha = alpha
+
+    def forward(self, x, label=None):
+        """
+        x: features from CNN. shape => (N, C)
+        """
+        atch_size = x.size(0)
+        num_channels = x.size(1)
+        h = x.size(2)
+        w = x.size(3)
+        v = x.view(batch_size, num_channels * h * w)
+        v = F.normalize(v, p=2, dim=1)
+        v = x.view(batch_size, num_channels, h, w)
+        v = self.alpha * v
+        return v
+
+
 class Model_CUSTOM(nn.Module):
     def __init__(self, model_name, pretrained, kmax=1, kmin=None, alpha=1, num_maps=1, num_classes=15,
                  fine_tuning=False, dropout=0.5):
@@ -191,14 +211,12 @@ class Model_CUSTOM(nn.Module):
         self.sp.add_module('spatial', WildcatPool2d(kmax, kmin, alpha))
         print(self.sp)
         self.m = nn.Softmax(dim=1)
-        self.arcface = ArcMarginProduct(num_classes * num_maps, num_classes)
-        print(self.arcface)
+
 
     def forward(self, x, labels):
         features = self.features(x)
         cmap = self.cwp(features)
         #cmap = self.dropout(cmap)
         sp = self.sp(features)
-        arcface_features = self.arcface(sp, labels)
-        out = self.m(arcface_features)
+        out = self.m(sp)
         return cmap, sp, out
