@@ -201,10 +201,11 @@ class Model_CUSTOM(nn.Module):
                               kernel_size=1,
                               stride=1, padding=0, dilation=1, groups=1,
                               bias=True)
+        self.features.add_module('L2', L2ConstrainedLinear(7))
         self.features.add_module('conv_features', self.conv)
 
         self.cwp = nn.Sequential()
-        self.cwp.add_module('L2', L2ConstrainedLinear(7))
+
         self.cwp.add_module('class_wise', ClassWisePool(num_maps))
         self.dropout = nn.Dropout2d(p=dropout)
         print(self.cwp)
