@@ -204,8 +204,8 @@ class Model_CUSTOM(nn.Module):
         self.features.add_module('conv_features', self.conv)
 
         self.cwp = nn.Sequential()
-        self.cwp.add_module('class_wise', ClassWisePool(num_maps))
         self.cwp.add_module('L2', L2ConstrainedLinear())
+        self.cwp.add_module('class_wise', ClassWisePool(num_maps))
         self.dropout = nn.Dropout2d(p=dropout)
         print(self.cwp)
         self.sp = nn.Sequential()
