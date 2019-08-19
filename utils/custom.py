@@ -205,6 +205,7 @@ class Model_CUSTOM(nn.Module):
 
         self.cwp = nn.Sequential()
         self.cwp.add_module('class_wise', ClassWisePool(num_maps))
+        self.cwp.add_module('L2', L2ConstrainedLinear())
         self.dropout = nn.Dropout2d(p=dropout)
         print(self.cwp)
         self.sp = nn.Sequential()
