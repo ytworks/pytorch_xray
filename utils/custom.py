@@ -164,7 +164,8 @@ class L2ConstrainedLinear(nn.Module):
         w = x.size(3)
         v = self.pool(x)
         v = F.normalize(v, p=2, dim=1)
-        v = self.alpha * (torch.matmul(v, x))
+        v = self.alpha * (torch.mul(x, v))
+        print(v.size())
         return v
 
 
