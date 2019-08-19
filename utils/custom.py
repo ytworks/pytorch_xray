@@ -218,6 +218,6 @@ class Model_CUSTOM(nn.Module):
         features = self.features(x)
         cmap = self.cwp(features)
         #cmap = self.dropout(cmap)
-        sp = self.sp(features)
+        sp = self.sp(cmap)
         out = self.m(sp)
         return cmap, sp, out
