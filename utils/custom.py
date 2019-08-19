@@ -165,7 +165,6 @@ class L2ConstrainedLinear(nn.Module):
         v = self.pool(x)
         v = F.normalize(v, p=2, dim=1)
         v = self.alpha * (torch.mul(x, v))
-        print(v.size())
         return v
 
 
@@ -205,7 +204,7 @@ class Model_CUSTOM(nn.Module):
         self.features.add_module('conv_features', self.conv)
 
         self.cwp = nn.Sequential()
-        self.cwp.add_module('L2', L2ConstrainedLinear())
+        self.cwp.add_module('L2', L2ConstrainedLinear(7))
         self.cwp.add_module('class_wise', ClassWisePool(num_maps))
         self.dropout = nn.Dropout2d(p=dropout)
         print(self.cwp)
