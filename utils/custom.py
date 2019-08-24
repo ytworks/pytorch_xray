@@ -147,6 +147,26 @@ class SqEx(nn.Module):
         return y
 
 
+class L2ConstrainedLinear(nn.Module):
+    def __init__(self, kernel_size, alpha=28):
+        super().__init__()
+        self.alpha = alpha
+        self.pool = nn.MaxPool2d(kernel_size=kernel_size)
+
+    def forward(self, x, label=None):
+        """
+        x: features from CNN. shape => (N, C)
+        """
+        batch_size = x.size(0)
+        num_channels = x.size(1)
+        h = x.size(2)
+        w = x.size(3)
+        v = self.pool(x)
+        v = F.normalize(v, p=2, dim=1)
+        v = self.alpha * (torch.mul(x, v))
+        return v
+
+
 class Model_CUSTOM(nn.Module):
     def __init__(self, model_name, pretrained, kmax=1, kmin=None, alpha=1, num_maps=1, num_classes=15,
                  fine_tuning=False, dropout=0.5):
@@ -204,6 +224,7 @@ class Model_CUSTOM(nn.Module):
                               bias=True)
 
         self.cwp = nn.Sequential()
+        self.cwp.add_module('L2', L2ConstrainedLinear(7))
         self.cwp.add_module('conv', self.conv)
         self.cwp.add_module('class_wise', ClassWisePool(num_maps))
         self.dropout = nn.Dropout2d(p=dropout)

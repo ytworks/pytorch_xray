@@ -28,21 +28,21 @@ def get_transform(ini):
         0, 90, -90] if ini.getboolean('augmentation', 'rotate90') else [0]
     data_transforms = {
         'train': transforms.Compose([
-            transforms.Resize(ini.getint('augmentation', 'resize_size')),
-            transforms.RandomResizedCrop(
-                ini.getint('augmentation', 'crop_size')),
             transforms.RandomHorizontalFlip(
                 p=ini.getfloat('augmentation', 'flip_h')),
             transforms.RandomVerticalFlip(
                 p=ini.getfloat('augmentation', 'flip_v')),
             Rotate90(angles),
+            transforms.RandomResizedCrop(
+                ini.getint('augmentation', 'crop_size')),
             transforms.RandomRotation(ini.getint('augmentation', 'rotation')),
+            transforms.Resize(ini.getint('augmentation', 'resize_size')),
             transforms.ToTensor(),
             transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
         ]),
         'val': transforms.Compose([
-            transforms.Resize(ini.getint('augmentation', 'resize_size')),
             transforms.CenterCrop(ini.getint('augmentation', 'crop_size')),
+            transforms.Resize(ini.getint('augmentation', 'resize_size')),
             transforms.ToTensor(),
             transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
         ]), }
