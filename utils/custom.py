@@ -151,7 +151,7 @@ class L2ConstrainedLinear(nn.Module):
     def __init__(self, kernel_size, alpha=28):
         super().__init__()
         self.alpha = alpha
-        self.pool = nn.MaxPool2d(kernel_size=kernel_size)
+        self.pool = WildcatPool2d(0.2, 0.2, 1)
 
     def forward(self, x, label=None):
         """
