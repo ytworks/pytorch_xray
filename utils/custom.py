@@ -151,7 +151,7 @@ class L2ConstrainedLinear(nn.Module):
     def __init__(self, kernel_size, alpha=28):
         super().__init__()
         self.alpha = alpha
-        self.pool = WildcatPool2d(0.2, 0.2, 1)
+        self.pool = nn.MaxPool2d(kernel_size=kernel_size)
 
     def forward(self, x, label=None):
         """
@@ -176,6 +176,7 @@ class Model_CUSTOM(nn.Module):
         self.se1 = CBAM(128)
         self.se2 = CBAM(256)
         self.se3 = CBAM(512)
+        self.se4 = CBAM(1024)
         self.features = nn.Sequential()
         self.features.add_module('conv0', model.features.conv0)
         self.features.add_module('norm0', model.features.norm0)
@@ -202,6 +203,7 @@ class Model_CUSTOM(nn.Module):
                               bias=True)
 
         self.cwp = nn.Sequential()
+        self.cwp.add_module('se4', self.se4)
         self.cwp.add_module('L2', L2ConstrainedLinear(7))
         self.cwp.add_module('conv', self.conv)
         self.cwp.add_module('class_wise', ClassWisePool(num_maps))
