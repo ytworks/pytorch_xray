@@ -29,6 +29,10 @@ def get_transform(ini):
     data_transforms = {
         'train': transforms.Compose([
             transforms.Resize(ini.getint('augmentation', 'resize_size')),
+            transforms.Pad((ini.getint('augmentation', 'padding_size'),
+                            ini.getint('augmentation', 'padding_size'),
+                            ini.getint('augmentation', 'padding_size'),
+                            ini.getint('augmentation', 'padding_size')), fill=0, padding_mode='constant'),
             transforms.RandomResizedCrop(
                 ini.getint('augmentation', 'crop_size')),
             transforms.RandomHorizontalFlip(
@@ -42,6 +46,10 @@ def get_transform(ini):
         ]),
         'val': transforms.Compose([
             transforms.Resize(ini.getint('augmentation', 'resize_size')),
+            transforms.Pad((ini.getint('augmentation', 'padding_size'),
+                            ini.getint('augmentation', 'padding_size'),
+                            ini.getint('augmentation', 'padding_size'),
+                            ini.getint('augmentation', 'padding_size')), fill=0, padding_mode='constant'),
             transforms.CenterCrop(ini.getint('augmentation', 'crop_size')),
             transforms.ToTensor(),
             transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
