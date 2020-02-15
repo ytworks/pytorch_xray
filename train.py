@@ -201,9 +201,10 @@ def main():
 
                 with torch.set_grad_enabled(phase == 'train'):
                     preds = model(inputs)
+                    l1_norm = torch.sum(torch.abs(preds[0]))
                     preds = preds[-1]
 
-                    loss = criterion(preds, labels)
+                    loss = criterion(preds, labels) + l1_norm * ini.getfloat('loss', 'l1_norm')
 
                     epoch_preds.append(preds.data.to('cpu').numpy())
                     epoch_labels.append(labels.data.to('cpu').numpy())
